@@ -21,28 +21,28 @@
   <script src="https://unpkg.com/tone@14.7.77/build/Tone.min.js"></script>
   <style>
     html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    } 
     body {
       height: 100%;
-  background: linear-gradient(135deg, #de58da, #eee8ff, #baefb9, #eee8ff);
-  background-size: 200% 200%;
-  animation: gradientShift 15s ease infinite;
-  margin: 0;
-  overflow: hidden;
-  font-family: 'Press Start 2P', cursive;
-  image-rendering: pixelated;
-  text-align: center;
+      background: linear-gradient(135deg, #de58da, #eee8ff, #baefb9, #eee8ff);
+      background-size: 200% 200%;
+      animation: gradientShift 15s ease infinite;
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Press Start 2P', cursive;
+      image-rendering: pixelated;
+      text-align: center;
     }
     @keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-#timer {
+    #timer {
       position: fixed;
       top: 20px;
       font-size: 32px;
@@ -50,12 +50,14 @@
       z-index: 999;
       text-shadow: 2px 2px 0 #000;
     }
- #score-container{
+    #score-container{
+      position: fixed;
       top: 20px;
-      z-index: 999;
+      z-index: 1999;
       margin: 20px;
     }
     #score {
+      position: fixed;
       top: 20px;
       font-size: 32px;
       font-weight: bold;
@@ -92,16 +94,16 @@
     }
 
     .hook {
-  position: absolute;
-  width: 4px;
-  background: #888;
-  box-shadow: 3px 0 #000; /* 钩子线条的阴影 */
-  top: 0;
-  left: 0;
-  display: none;
-  image-rendering: pixelated;
-  z-index: 998;
-}
+      position: absolute;
+      width: 4px;
+      background: #888;
+      box-shadow: 3px 0 #000; /* 钩子线条的阴影 */
+      top: 0;
+      left: 0;
+      display: none;
+      image-rendering: pixelated;
+      z-index: 998;
+    }
 
 /* hook */
 .hook::after {
@@ -165,7 +167,6 @@
   cursor: pointer;
 }
 #pauseButton:hover {
-
 transform: translateX(-50%) scale(1.1); 
 text-shadow: 4px 4px 0 #000;
 }
@@ -187,7 +188,7 @@ text-shadow: 4px 4px 0 #000;
     }
     
 
-    #menuOverlay button {
+#menuOverlay button {
   margin: 10px;
   font-family: "Press Start 2P", system-ui;
   line-height: 1;       
@@ -303,7 +304,7 @@ text-shadow: 4px 4px 0 #000;
   <div id="score-container" style="text-align: left;">
   
     <div id="score" style="color: #666666;">Score: 0</div>
-    <div id="highScore" style="margin-top: 8px;font-size: 18px; color: #666666; text-shadow: 2px 2px 0 #000; margin-bottom: 5px;">
+    <div id="highScore" style="margin-top: 18px;font-size: 18px; color: #666666; text-shadow: 2px 2px 0 #000; margin-bottom: 5px;">
         High Score: 0
     </div>
     <div id="score-notification"></div>
@@ -345,7 +346,25 @@ text-shadow: 4px 4px 0 #000;
     </audio>
     
   
-    
+    <div id="startOverlay" style="
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100vw; height: 100vh; 
+    background: rgba(255, 255, 255, 0.3); 
+    backdrop-filter: blur(5px);
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 3000;
+    align-items: flex-start; 
+    padding-top: 40vh; 
+    font-family: 'Press Start 2P', cursive; 
+    color: #FF5E79; 
+    text-shadow: 3px 3px 0 #000;
+    font-size: 32px;
+    cursor: pointer;">
+    Click to Start
+  </div>
   
   <script>
     const scoreDisplay = document.getElementById("score");
@@ -377,14 +396,14 @@ let nextTickTime = Date.now() + 1000;  // Time of the next countdown tick
     const operators = ["√t", "t+e^(ln(5))", "t×e^{\ln(2)}", "t+ln(e¹⁰)"];
     const NUM_TOTAL = 20;
     const numberColors = [
-  '#A0D6B4', // green
-  '#FFD1DC', // pink
-  '#B5EAD7', // light green
-  '#C7CEEA', // light purple
-  '#FFDAC1', // light pink
-  '#FFFFD1', // pastel yellow
-  '#CCE5FF'  // blue
-];
+      '#A0D6B4', // green
+      '#FFD1DC', // pink
+      '#B5EAD7', // light green
+      '#C7CEEA', // light purple
+      '#FFDAC1', // light pink
+      '#FFFFD1', // pastel yellow
+      '#CCE5FF'  // blue
+    ];
 
 const luckyNumbersMap = {
   13: { text: "Γ(4)+e⁰", value: 13 },               // 6 + 1 = 7, Γ(4)=6, e⁰=1
@@ -401,8 +420,6 @@ const luckyNumbersMap = {
 };
 
 const bgMusic = document.getElementById('bgMusic');
-//const startOverlay = document.getElementById('startOverlay');
-
 const clickSound = document.getElementById('clickSound');
 const catchSevenSound = document.getElementById('catchSevenSound');
 const catchOperatorSound = document.getElementById('catchOperatorSound');
@@ -412,23 +429,19 @@ const highScoreSound = document.getElementById('highScoreSound');
 
 document.getElementById("highScore").textContent = `High Score: ${highScore}`;
 
+const startOverlay = document.getElementById('startOverlay');
+
 
 let musicEnabled = true;
 let hasGameStarted = false;
 
-//document.getElementById('startOverlay').addEventListener('click', () => {
-//    bgMusic.play();
-//    document.getElementById('startOverlay').style.display = 'none';
-//});
+startOverlay.addEventListener('click', () => {
+  startOverlay.style.display = 'none';
+  if (bgMusic.paused) bgMusic.play();
 
-
-//document.addEventListener("click", () => {
-//    if (bgMusic.paused) {
-        bgMusic.play();
-//    }
-//    hasGameStarted = true;  
-//    gameStartTime = Date.now(); 
-//}, { once: true });  
+  hasGameStarted = true; 
+  gameStartTime = Date.now(); 
+});
 
 
 
@@ -443,9 +456,6 @@ function initMusic() {
   }, { once: true });
 }
 initMusic();
-
-
-
 
     function showNotification(text, color, type) {
       const notification = document.createElement("div");
@@ -489,21 +499,19 @@ initMusic();
 
   showNotification(notificationText, color, "time");
 }
-
-
-    
+   
     function getUnlockedSevenExpressions() {
-  return [
-    { text: "√49", value: 7 },
-    { text: "log₁₀(10⁷)", value: 7 },
-    { text: "14/2", value: 7 },
-    { text: "3!+1", value: 7 },
-    { text: "2³-1", value: 7 },
-    { text: "ceil(6.2)", value: 7 },
-    { text: "Γ(4)+e⁰", value: 7 },
-    { text: "sin²(π/2)+6", value: 7 }
-  ];
-}
+      return [
+      { text: "√49", value: 7 },
+      { text: "log₁₀(10⁷)", value: 7 },
+      { text: "14/2", value: 7 },
+      { text: "3!+1", value: 7 },
+      { text: "2³-1", value: 7 },
+      { text: "ceil(6.2)", value: 7 },
+      { text: "Γ(4)+e⁰", value: 7 },
+      { text: "sin²(π/2)+6", value: 7 }
+      ];
+    }
 
 
  
@@ -595,8 +603,9 @@ if (isOperator) {
     function animate() {
   if (!gameActive || isPaused ) return;
 
-  const gameTime = (Date.now() - gameStartTime) / 1000;
-  speedMultiplier = Math.min(3, 1 + gameTime / 150.0);
+  const gameTime = hasGameStarted ? (Date.now() - gameStartTime) / 1000 : 0;
+  speedMultiplier = hasGameStarted ? Math.min(3, 1 + gameTime / 150.0) : 1;
+
 
   numbers.forEach(n => {
     if (n.hooked) return;
@@ -779,7 +788,7 @@ showNotification(notificationText, color, "time");
   const currentTime = Date.now();
   
   // If it's time to update the timer
-  if (currentTime >= nextTickTime) {
+  if (hasGameStarted && currentTime  >= nextTickTime) {
     timeLeft = Math.max(0, timeLeft - 1);  
     timeDisplay.textContent = timeLeft;
     nextTickTime = currentTime + 1000; // Schedule next tick
@@ -899,7 +908,7 @@ function playHighscoreSound() {
 
 
   const starsContainer = document.querySelector('.stars');
-const STAR_COUNT = 50;
+  const STAR_COUNT = 50;
 
 for (let i = 0; i < STAR_COUNT; i++) {
   const star = document.createElement('div');

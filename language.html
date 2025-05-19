@@ -56,11 +56,13 @@ body {
       text-shadow: 2px 2px 0 #000;
     }
  #score-container{
+      position: fixed;
       top: 20px;
-      z-index: 999;
+      z-index: 1999;
       margin: 20px;
     }
     #score {
+      position: fixed;
       top: 20px;
       font-size: 32px;
       font-weight: bold;
@@ -347,7 +349,7 @@ text-shadow: 4px 4px 0 #000;
 <div id="score-container" style="text-align: left;">
   
   <div id="score" style="color: #666666;">Score: 0</div>
-  <div id="highScore" style="margin-top: 8px;font-size: 18px; color: #666666; text-shadow: 2px 2px 0 #000; margin-bottom: 5px;">
+  <div id="highScore" style="margin-top: 18px;font-size: 18px; color: #666666; text-shadow: 2px 2px 0 #000; margin-bottom: 5px;">
       High Score: 0
   </div>
   <div id="score-notification"></div>
@@ -389,6 +391,26 @@ text-shadow: 4px 4px 0 #000;
 
   </div>
   <div class="stars"></div>
+
+  <div id="startOverlay" style="
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100vw; height: 100vh; 
+  background: rgba(255, 255, 255, 0.3); 
+  backdrop-filter: blur(5px);
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  z-index: 3000;
+  align-items: flex-start; 
+  padding-top: 40vh; 
+  font-family: 'Press Start 2P', cursive; 
+  color: #FF5E79; 
+  text-shadow: 3px 3px 0 #000;
+  font-size: 32px;
+  cursor: pointer;">
+  Click to Start
+</div>
   <script>
     
     const scoreDisplay = document.getElementById("score");
@@ -462,7 +484,7 @@ const numberColors = [
   "マイナス10"
 ];
 
-    const NUM_TOTAL = 25;
+    const NUM_TOTAL = 20;
     const luckyNumbersMap = {
   13: { text: "十三", lang: "zh" },         // Chinese
   17: { text: "じゅうなな", lang: "ja" },    // Japansese
@@ -490,12 +512,17 @@ const highScoreSound = document.getElementById('highScoreSound');
 document.getElementById("highScore").textContent = `High Score: ${highScore}`;
 
 let musicEnabled = true;
-//let hasGameStarted = false;
 
-//document.getElementById('startOverlay').addEventListener('click', () => {
-//    bgMusic.play();
-//    document.getElementById('startOverlay').style.display = 'none';
-//});
+
+let hasGameStarted = false;
+
+startOverlay.addEventListener('click', () => {
+  startOverlay.style.display = 'none';
+  if (bgMusic.paused) bgMusic.play();
+
+  hasGameStarted = true; 
+  gameStartTime = Date.now(); 
+});
 
 
 //document.addEventListener("click", () => {
@@ -567,14 +594,13 @@ initMusic();
   }
   
 
-  // ✅ Immediately update the displayed time
+  // Immediately update the displayed time
   timeDisplay.textContent = timeLeft;
 
   showNotification(notificationText, color, "time");
 }
 
 
-    // 解锁机制 - 更高级表达式随着分数增加出现
     function getUnlockedSevenExpressions() {
   return [
     { text: "七", value: 7 },
@@ -585,7 +611,6 @@ initMusic();
   ];
 }
 
-    // 非7的表达式
     const languageNumbers = [
   { text: "一", value: 1 },        // Chinese
   { text: "二", value: 2 },
@@ -626,7 +651,7 @@ initMusic();
   { text: "otto", value: 8 },
   { text: "nove", value: 9 },
 
-  { text: "yksi", value: 1 }, //FInnish
+  { text: "yksi", value: 1 }, //Finnish
   { text: "kaksi", value: 2 },
   { text: "kolme", value: 3 },
   { text: "neljä", value: 4 },
@@ -741,9 +766,8 @@ if (numbers.length < NUM_TOTAL) {
 
       if (!gameActive || isPaused) return;
 
-      const gameTime = (Date.now() - gameStartTime) / 1000;
-
-      speedMultiplier = Math.min(3, 1 + gameTime / 150.0);
+      const gameTime = hasGameStarted ? (Date.now() - gameStartTime) / 1000 : 0;
+      speedMultiplier = hasGameStarted ? Math.min(3, 1 + gameTime / 150.0) : 1;
 
       numbers.forEach(n => {
         if (n.hooked) return;
@@ -756,14 +780,11 @@ if (numbers.length < NUM_TOTAL) {
         if (x > window.innerWidth ) {
           n.el.style.left = `-${n.el.offsetWidth + 10}px`;;
           n.baseY = 100 + Math.random() * (window.innerHeight - 200);
-          //n.el.remove();
-          //numbers.splice(numbers.indexOf(n), 1);
         }
       });
 
       requestAnimationFrame(animate);
     }
-    //initMusic();
     for (let i = 0; i < NUM_TOTAL; i++) createEntity(true);
     animate();
 
@@ -855,7 +876,7 @@ showNotification(`+${points}`, hit.value === 7 ? "#FF2222" : (isLucky ? "#33AA33
     case "加十":
     case "plus ten":
     case "più dieci":          // Italian
-    case "kymmenen lisää":      // Finnish
+    case "plus kymmenen":      // Finnish
     case "プラス10":            // Japanese
       timeLeft += 10;
       notificationText = "+10s";
@@ -893,7 +914,7 @@ showNotification(`+${points}`, hit.value === 7 ? "#FF2222" : (isLucky ? "#33AA33
       case "减十":
     case "minus ten":
     case "meno dieci":        // Italian
-    case "miinus lisää":      // Finnish (is this the correct translation? Double-check if needed)
+    case "miinus kymmenen":      // Finnish (is this the correct translation? Double-check if needed)
     case "マイナス10":          // Japanese
       timeLeft -= 10;
       notificationText = "-10s";
@@ -955,8 +976,7 @@ showNotification(notificationText, color, "time");
  
   const currentTime = Date.now();
   
-  // If it's time to update the timer
-  if (currentTime >= nextTickTime) {
+  if (hasGameStarted && currentTime >= nextTickTime) {
     timeLeft = Math.max(0, timeLeft - 1);  // Prevent timeLeft from going negative
     timeDisplay.textContent = timeLeft;
     nextTickTime = currentTime + 1000; // Schedule next tick
@@ -965,7 +985,7 @@ showNotification(notificationText, color, "time");
       gameActive = false;
       clearInterval(timer); 
        //stop every sound effect
-bgMusic.pause();
+    bgMusic.pause();
     clickSound.pause();
     catchSevenSound.pause();
     catchOperatorSound.pause();
