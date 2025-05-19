@@ -447,13 +447,12 @@ let hasGameStarted = false;
 //    if (bgMusic.paused) {
         bgMusic.play();
 //    }
-//    hasGameStarted = true;  // 游戏正式开始
-//    gameStartTime = Date.now(); // 重新计算加速时间
-//}, { once: true });  // 确保只触发一次
+//    hasGameStarted = true;  
+//    gameStartTime = Date.now(); 
+//}, { once: true });  
 
 
-
-// 初始化音乐（需要用户交互后播放）
+// initialize music
 function initMusic() {
   bgMusic.volume = 0.3;
   clickSound.volume = 0.5;
@@ -539,13 +538,12 @@ text = isNegativeOperator
   const numWidth = fontSize * 1.2;
 
   if (forceCenter) {
-    // 强制出现在屏幕中央
+    // appear in the middle of the screen
     //div.style.left = `${window.innerWidth / 2 - numWidth / 2}px`;
     div.style.left = `${window.innerWidth /4 + (Math.random() * (window.innerWidth/2))}px`;
     //div.style.top = `${window.innerHeight / 2 - fontSize / 2}px`;
     div.style.top = `${100 + (Math.random() * (window.innerHeight - 200))}px`;
   } else if (initialFill) {
-    // 从屏幕左边完全飞入
     const leftPos = -numWidth - (Math.random() * 300);
     div.style.left = `${leftPos}px`;
     div.style.top = `${100 + (Math.random() * (window.innerHeight - 200))}px`;
@@ -649,10 +647,9 @@ text = isNegativeOperator
     }
 
     // Initialize game elements - create initial fill of numbers
-    // 先放几个数字直接出现在屏幕中央
-for (let i = 0; i < 10; i++) createEntity(true, true);  // 5 个数字直接居中显示
+for (let i = 0; i < 10; i++) createEntity(true, true);  // 
 
-// 剩下的数字从左边飞入
+// remaining numbers enter from the left
 for (let i = 0; i < NUM_TOTAL - 10; i++) createEntity(true);  
 
     animate();
@@ -808,14 +805,13 @@ else if (h > window.innerHeight) {
       clearInterval(timer);
       hook.style.transition = "none";  
 
-// 停止所有音效和背景音乐
+// stop every sound
 bgMusic.pause();
     clickSound.pause();
     catchSevenSound.pause();
     catchOperatorSound.pause();
     buttonSound.pause();
 
-    // 可选：重置播放位置，下次从头开始
     bgMusic.currentTime = 0;
     clickSound.currentTime = 0;
     catchSevenSound.currentTime = 0;
@@ -869,7 +865,7 @@ bgMusic.pause();
       bgMusic.pause();  
       document.getElementById("menuText").innerHTML = "<div style='color: #FF5E79;text-shadow: 3px 3px 0 #000000 ; font-size: 32px'>Game Paused</div>";
       document.getElementById("menuOverlay").style.display = "block";
-      hook.style.transition = "none"; // 停止动画平滑效果
+      hook.style.transition = "none"; 
     }
 
     function resumeGame() {
@@ -877,21 +873,21 @@ bgMusic.pause();
       document.getElementById("menuOverlay").style.display = "none";
       animate(); 
       if (musicEnabled && bgMusic.paused) {
-        bgMusic.play();  // 恢复播放，不会从头开始
+        bgMusic.play();  
     }
     }
     function restartGame() {
-     const newAudio = buttonSound.cloneNode(true); // 关键！
+     const newAudio = buttonSound.cloneNode(true); 
     newAudio.currentTime = 0;
     newAudio.play();
     setTimeout(() => location.reload(), 500);
     }
 
     function goHome() {
-    const newAudio = buttonSound.cloneNode(true); // 关键！
+    const newAudio = buttonSound.cloneNode(true); 
     newAudio.currentTime = 0;
     newAudio.play();
-    setTimeout(() =>  window.location.href = "index.html",500); // 确保音效播放后跳转
+    setTimeout(() =>  window.location.href = "index.html",500); // jump after playing sound
 }
     document.getElementById("pauseButton").addEventListener("click", () => {
     buttonSound.currentTime = 0;
@@ -902,7 +898,7 @@ bgMusic.pause();
     document.getElementById("resumeButton").addEventListener("click", function(event) {
     //buttonSound.currentTime = 0;
     // buttonSound.play();
-    const newAudio = buttonSound.cloneNode(true); // 关键！
+    const newAudio = buttonSound.cloneNode(true); 
     newAudio.currentTime = 0;
     newAudio.play().then(() => {
     //   event.stopPropagation();
@@ -916,7 +912,7 @@ bgMusic.pause();
 function playHighscoreSound() {
   const highscoreSound = document.getElementById('highscoreSound');
   if (highscoreSound) {
-    highscoreSound.currentTime = 0; // 重置播放位置
+    highscoreSound.currentTime = 0; 
     highscoreSound.play();
   }
 }

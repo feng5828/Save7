@@ -161,9 +161,11 @@ a:hover {
   
 </head>
 <body>
-  <audio id="bgMusic" src="assets/background.mp3" loop></audio>
   
-
+  <audio id="buttonSound" preload="auto">
+    <source src="assets/clickbutton.mp3" type="audio/mpeg">
+  </audio>
+  
   <div class="stars"></div>
   
 
@@ -199,11 +201,12 @@ a:hover {
 
 
   <script>
+   const starsContainer = document.querySelector('.stars');
    
 
-   const starsContainer = document.querySelector('.stars');
-const STAR_COUNT = 50;
 
+const STAR_COUNT = 50;
+ 
 
 for (let i = 0; i < STAR_COUNT; i++) {
   const star = document.createElement('div');
@@ -217,6 +220,7 @@ for (let i = 0; i < STAR_COUNT; i++) {
   star.style.top = `${Math.random() * 100}vh`;
   const progress = Math.random();
   star.style.animationDelay = `${-progress * duration}s`;
+
 
   const colors = ['#FFFFFF', '#FFDDEE', '#CCEEFF', '#FFFFCC'];
   star.style.background = colors[Math.floor(Math.random() * colors.length)];
@@ -263,27 +267,20 @@ document.getElementById('language-score').textContent = localStorage.getItem('sa
 
     document.querySelectorAll('.start-button').forEach(button => {
   button.addEventListener('click', function(e) {
-    e.preventDefault(); // 阻止默认跳转
+    e.preventDefault(); // 
     const targetUrl = this.getAttribute('href');
     
-    // 播放音效
+    
     const buttonSound = document.getElementById('buttonSound');
     buttonSound.currentTime = 0;
     buttonSound.play();
     
-    // 500ms 后跳转
+    // jump after 500ms
     setTimeout(() => {
       window.location.href = targetUrl;
     }, 800);
   });
 });
-const bgMusic = document.getElementById('bgMusic');
-  bgMusic.volume = 0.3; // 可以调整音量大小
-
-  document.addEventListener('click', function startMusic() {
-    bgMusic.play().catch(() => {}); // 防止因未授权播放被拒绝报错
-    document.removeEventListener('click', startMusic); // 只触发一次
-  });
 
 
   </script>
