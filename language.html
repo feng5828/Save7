@@ -127,7 +127,7 @@ body {
   z-index: 998;
 }
 
-/* 钩子头部（圆形部分） */
+/* hook */
 .hook::after {
   content: '';
   position: absolute;
@@ -142,19 +142,19 @@ body {
   clip-path: path('M18 0 A18 18 0 1 1 0 18 A5 5 0 1 0 18 0 Z');
 }
 
-/* 阴影部分（单独控制，下移） */
+/* hook shadow */
 .hook::before {
   content: '';
   position: absolute;
-  bottom: -35px; /* 比 ::after 更低（原 -32px → 现在 -35px） */
-  left: -15px; /* 水平偏移 3px（阴影向右下偏移） */
+  bottom: -35px; 
+  left: -15px; 
   width: 36px;
   height: 36px;
   background: #000;
-  z-index: 997; /* 确保在 ::after 下方 */
+  z-index: 997; 
   image-rendering: pixelated;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cpath d='M18 0 A18 18 0 1 1 0 18 A5 5 0 1 0 18 0 Z' fill='black'/%3E%3C/svg%3E");
-  opacity: 1; /* 可选：让阴影稍微透明 */
+  opacity: 1; 
 }
 
 
@@ -176,21 +176,21 @@ body {
 
 #pauseButton {
   color:  #666666;
-  text-shadow: 3px 3px 0 #000; /* 添加阴影 */
+  text-shadow: 3px 3px 0 #000; 
   position: fixed;
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
   font-family: "Press Start 2P", system-ui;
-  font-size: 40px; /* 稍微大一些 */
+  font-size: 40px; 
   background: none;
   border: none;
   cursor: pointer;
 }
 #pauseButton:hover {
 
-transform: translateX(-50%) scale(1.1);  /* 稍微放大 */
+transform: translateX(-50%) scale(1.1);  
 text-shadow: 4px 4px 0 #000;
 }
 
@@ -206,8 +206,8 @@ text-shadow: 4px 4px 0 #000;
       font-family: "Press Start 2P", system-ui;
       text-align: center;
       padding-top: 150px;
-      background: rgba(255, 255, 255, 0.3); /* 柔和白色蒙版 */
-      backdrop-filter: blur(5px); /* 加一点毛玻璃效果 */
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(5px); 
     }
     
     #menuOverlay button {
@@ -285,9 +285,9 @@ text-shadow: 4px 4px 0 #000;
 }
 
 .lucky {
-  color: #FFD700; /* 金色 */
+  color: #FFD700; 
   text-shadow: 
-    2px 2px 2px 2px #000,        /* 主黑色阴影 */
+    2px 2px 2px 2px #000,    
 } 
 
 
@@ -414,13 +414,13 @@ let nextTickTime = Date.now() + 1000;  // Time of the next countdown tick
 
 
 const numberColors = [
-  '#A0D6B4', // 薄荷绿（清新不刺眼）
-  '#FFD1DC', // 柔粉色
-  '#B5EAD7', // 浅绿色
-  '#C7CEEA', // 淡紫色
-  '#FFDAC1', // 奶油粉
-  '#FFFFD1', // 柔和淡黄
-  '#CCE5FF'  // 天空蓝
+  '#A0D6B4', // green
+  '#FFD1DC', // pink
+  '#B5EAD7', // light green
+  '#C7CEEA', // light purple
+  '#FFDAC1', // pastel pink
+  '#FFFFD1', // pastel yellow
+  '#CCE5FF'  // sky blue
 ];
 
 
@@ -464,17 +464,17 @@ const numberColors = [
 
     const NUM_TOTAL = 25;
     const luckyNumbersMap = {
-  13: { text: "十三", lang: "zh" },         // 中文
-  17: { text: "じゅうなな", lang: "ja" },    // 日语
-  19: { text: "十九", lang: "zh" },         // 中文
-  23: { text: "twenty-three", lang: "en" }, // 英语
-  29: { text: "ventinove", lang: "it" },    // 意大利语
-  31: { text: "三十一", lang: "zh" },        // 中文
-  37: { text: "三十七", lang: "fi" }, // 芬兰语
-  41: { text: "quarantuno", lang: "it" },   // 意大利语
-  43: { text: "forty-three", lang: "en" },  // 英语
-  47: { text: "しじゅうなな", lang: "ja" },   // 日语
-  53: { text: "viisikymmentäkolme", lang: "fi" } // 芬兰语
+  13: { text: "十三", lang: "zh" },         // Chinese
+  17: { text: "じゅうなな", lang: "ja" },    // Japansese
+  19: { text: "十九", lang: "zh" },         // Chinese
+  23: { text: "twenty-three", lang: "en" }, // English
+  29: { text: "ventinove", lang: "it" },    // Italian
+  31: { text: "三十一", lang: "zh" },        // Chinese
+  37: { text: "三十七", lang: "fi" }, // Finnish
+  41: { text: "quarantuno", lang: "it" },   // Italian
+  43: { text: "forty-three", lang: "en" },  // English
+  47: { text: "しじゅうなな", lang: "ja" },   // Japanese
+  53: { text: "viisikymmentäkolme", lang: "fi" } // Finnish
 };
 
 const bgMusic = document.getElementById('bgMusic');
@@ -644,17 +644,17 @@ initMusic();
 const operatorBaseChance = 0.2;
 const isOperator = Math.random() < operatorBaseChance;
 
-     const isLucky = Math.random() < 0.1; // 10% 概率生成 Lucky Number
+     const isLucky = Math.random() < 0.1; // 10%  Lucky Number
       let val, text;
       if (isLucky) {
         const luckyKeys = Object.keys(luckyNumbersMap);
   const luckyVal = luckyKeys[Math.floor(Math.random() * luckyKeys.length)];
   const luckyEntry = luckyNumbersMap[luckyVal];
 
-  val = parseInt(luckyVal);  // 保持数值用于分数计算
-  text = luckyEntry.text;    // 显示语言表达
+  val = parseInt(luckyVal);  
+  text = luckyEntry.text;    
   div.className = "number lucky";
-  div.textContent = text;    // 设置显示的文本
+  div.textContent = text;    
 } else 
 if (isOperator) {
     const negativeBias = Math.min(0.25 + (gameTime / 120), 0.75);  // Time-based scaling
@@ -692,7 +692,6 @@ if (picked.value === 7) {
   div.className = "number seven";
 } else {
   div.className = "number";
-  // 应用随机颜色
   const randomColor = numberColors[Math.floor(Math.random() * numberColors.length)];
   div.style.color = randomColor;
 }
@@ -706,7 +705,7 @@ if (picked.value === 7) {
       div.textContent = text;
       const fontSize = 32 + Math.floor(Math.random() * 16);
       div.style.fontSize = `${fontSize}px`;
-      // 强制保证代表 7 的字符使用 "seven" 样式（红色）
+      // 7 must  be red
 if (val === 7) {
   div.className = "number seven";
 }
@@ -736,7 +735,6 @@ if (val === 7) {
     }
 
     function animate() {
-      // 保持一定数量的数字存在
 if (numbers.length < NUM_TOTAL) {
     createEntity();
 }
@@ -780,11 +778,10 @@ if (numbers.length < NUM_TOTAL) {
 
       let h = 0;
       const interval = setInterval(() => {
-        if (isPaused) return;  // 暂停时不更新勾子，不检测碰撞
+        if (isPaused) return;  
          if (timeLeft <= 0) {
-    // 游戏结束，保持钩子停在当前高度，不再收回
-        clearInterval(interval); // 停止当前勾子运动
-       hook.style.display = "block"; // 保持勾子停在当前高度
+        clearInterval(interval);
+       hook.style.display = "block"; 
          isHookActive = false;
          hook.style.height = `${h}px`;
         return;
@@ -819,7 +816,7 @@ if (numbers.length < NUM_TOTAL) {
 }
 
          
-           // 播放点击音效
+        
         
           hit.el.style.position = "fixed";
           hit.el.style.left = `${rect.left}px`;
@@ -830,9 +827,9 @@ if (numbers.length < NUM_TOTAL) {
           const liftUp = setInterval(() => {
             if(isPaused)return;
             if (timeLeft <= 0) {
-    // 游戏结束，保持钩子停在当前高度，不再收回
-        clearInterval(interval); // 停止当前勾子运动
-       hook.style.display = "block"; // 保持勾子停在当前高度
+  
+        clearInterval(interval); 
+       hook.style.display = "block"; 
          isHookActive = false;
          hook.style.height = `${lift}px`;
         return;
@@ -927,14 +924,14 @@ showNotification(notificationText, color, "time");
         } else if (h > window.innerHeight) {
   clearInterval(interval);
  
-  // 正常情况下收回钩子
+  
   let returnHeight = window.innerHeight;
   const returnInterval = setInterval(() => {
     if(isPaused)return;
     if (timeLeft <= 0) {
-    // 游戏结束，保持钩子停在当前高度，不再收回
-        clearInterval(interval); // 停止当前勾子运动
-       hook.style.display = "block"; // 保持勾子停在当前高度
+   
+        clearInterval(interval); 
+       hook.style.display = "block"; 
          isHookActive = false;
          hook.style.height = `${returnHeight}px`;
         return;
@@ -967,20 +964,19 @@ showNotification(notificationText, color, "time");
     if (timeLeft <= 0) {
       gameActive = false;
       clearInterval(timer); 
-       // 停止所有音效和背景音乐
+       //stop every sound effect
 bgMusic.pause();
     clickSound.pause();
     catchSevenSound.pause();
     catchOperatorSound.pause();
     buttonSound.pause();
 
-    // 可选：重置播放位置，下次从头开始
     bgMusic.currentTime = 0;
     clickSound.currentTime = 0;
     catchSevenSound.currentTime = 0;
     catchOperatorSound.currentTime = 0;
     buttonSound.currentTime = 0;
-      // 判断是否达到新高分
+    
       if (score > highScore) {
     highScore = score;
     localStorage.setItem('save7skyLanguageHighScore', highScore);
@@ -992,7 +988,7 @@ bgMusic.pause();
     timesUpSound.play();
   }
 
-      hook.style.transition = "none";  // 停止任何过渡动画
+      hook.style.transition = "none";  
     
 
       
@@ -1028,7 +1024,7 @@ bgMusic.pause();
       bgMusic.pause();  
       document.getElementById("menuText").innerHTML = "<div style='color: #FF5E79;text-shadow: 3px 3px 0 #000000 ; font-size: 32px'>Game Paused</div>";
       document.getElementById("menuOverlay").style.display = "block";
-      hook.style.transition = "none"; // 停止动画平滑效果
+      hook.style.transition = "none"; 
     }
 
     function resumeGame() {
@@ -1036,12 +1032,12 @@ bgMusic.pause();
       document.getElementById("menuOverlay").style.display = "none";
       animate(); 
       if (musicEnabled && bgMusic.paused) {
-        bgMusic.play();  // 恢复播放，不会从头开始
+        bgMusic.play();  
     }
     }
 
     function restartGame() {
-     const newAudio = buttonSound.cloneNode(true); // 关键！
+     const newAudio = buttonSound.cloneNode(true); 
     newAudio.currentTime = 0;
     newAudio.play();
     setTimeout(() => location.reload(), 500);
@@ -1049,10 +1045,10 @@ bgMusic.pause();
 
 
     function goHome() {
-    const newAudio = buttonSound.cloneNode(true); // 关键！
+    const newAudio = buttonSound.cloneNode(true); 
     newAudio.currentTime = 0;
     newAudio.play();
-    setTimeout(() =>  window.location.href = "index.html",500); // 确保音效播放后跳转
+    setTimeout(() =>  window.location.href = "index.html",500); // jump after sound effect
 }
 
     document.getElementById("pauseButton").addEventListener("click", () => {
@@ -1064,7 +1060,7 @@ bgMusic.pause();
 document.getElementById("resumeButton").addEventListener("click", function(event) {
     //buttonSound.currentTime = 0;
     // buttonSound.play();
-    const newAudio = buttonSound.cloneNode(true); // 关键！
+    const newAudio = buttonSound.cloneNode(true); 
     newAudio.currentTime = 0;
     newAudio.play().then(() => {
     //   event.stopPropagation();
@@ -1077,7 +1073,7 @@ document.getElementById("resumeButton").addEventListener("click", function(event
 function playHighscoreSound() {
   const highscoreSound = document.getElementById('highscoreSound');
   if (highscoreSound) {
-    highscoreSound.currentTime = 0; // 重置播放位置
+    highscoreSound.currentTime = 0; 
     highscoreSound.play();
   }
 }

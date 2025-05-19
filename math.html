@@ -103,7 +103,7 @@
   z-index: 998;
 }
 
-/* 钩子头部（圆形部分） */
+/* hook */
 .hook::after {
   content: '';
   position: absolute;
@@ -118,7 +118,7 @@
   clip-path: path('M18 0 A18 18 0 1 1 0 18 A5 5 0 1 0 18 0 Z');
 }
 
-/* 阴影部分（单独控制，下移） */
+/* hook shadow */
 .hook::before {
   content: '';
   position: absolute;
@@ -426,13 +426,13 @@ let hasGameStarted = false;
 //    if (bgMusic.paused) {
         bgMusic.play();
 //    }
-//    hasGameStarted = true;  // 游戏正式开始
-//    gameStartTime = Date.now(); // 重新计算加速时间
-//}, { once: true });  // 确保只触发一次
+//    hasGameStarted = true;  
+//    gameStartTime = Date.now(); 
+//}, { once: true });  
 
 
 
-// 初始化音乐（需要用户交互后播放）
+// initialize music
 function initMusic() {
   bgMusic.volume = 0.3;
   clickSound.volume = 0.5;
@@ -787,14 +787,13 @@ showNotification(notificationText, color, "time");
     if (timeLeft <= 0) {
       gameActive = false;
       clearInterval(timer);
-       // 停止所有音效和背景音乐
+       // stop every soundeffect
  bgMusic.pause();
     clickSound.pause();
     catchSevenSound.pause();
     catchOperatorSound.pause();
     buttonSound.pause();
 
-    // 可选：重置播放位置，下次从头开始
     bgMusic.currentTime = 0;
     clickSound.currentTime = 0;
     catchSevenSound.currentTime = 0;
@@ -844,19 +843,19 @@ function pauseGame() {
       bgMusic.pause();  
       document.getElementById("menuText").innerHTML = "<div style='color: #FF5E79;text-shadow: 3px 3px 0 #000000 ; font-size: 32px'>Game Paused</div>";
       document.getElementById("menuOverlay").style.display = "block";
-      hook.style.transition = "none"; // 停止动画平滑效果
+      hook.style.transition = "none"; 
     }
     function resumeGame() {
       isPaused = false;
       document.getElementById("menuOverlay").style.display = "none";
       animate(); 
       if (musicEnabled && bgMusic.paused) {
-        bgMusic.play();  // 恢复播放，不会从头开始
+        bgMusic.play();  
     }
     }
    
     function restartGame() {
-     const newAudio = buttonSound.cloneNode(true); // 关键！
+     const newAudio = buttonSound.cloneNode(true); 
     newAudio.currentTime = 0;
     newAudio.play();
     setTimeout(() => location.reload(), 500);
@@ -864,10 +863,10 @@ function pauseGame() {
 
 
     function goHome() {
-    const newAudio = buttonSound.cloneNode(true); // 关键！
+    const newAudio = buttonSound.cloneNode(true); 
     newAudio.currentTime = 0;
     newAudio.play();
-    setTimeout(() =>  window.location.href = "index.html",500); // 确保音效播放后跳转
+    setTimeout(() =>  window.location.href = "index.html",500); // jump after playing sound
 }
     document.getElementById("pauseButton").addEventListener("click", () => {
     buttonSound.currentTime = 0;
@@ -878,7 +877,7 @@ function pauseGame() {
     document.getElementById("resumeButton").addEventListener("click", function(event) {
     //buttonSound.currentTime = 0;
     // buttonSound.play();
-    const newAudio = buttonSound.cloneNode(true); // 关键！
+    const newAudio = buttonSound.cloneNode(true); 
     newAudio.currentTime = 0;
     newAudio.play().then(() => {
     //   event.stopPropagation();
@@ -892,7 +891,7 @@ function pauseGame() {
 function playHighscoreSound() {
   const highscoreSound = document.getElementById('highscoreSound');
   if (highscoreSound) {
-    highscoreSound.currentTime = 0; // 重置播放位置
+    highscoreSound.currentTime = 0; 
     highscoreSound.play();
   }
 }
