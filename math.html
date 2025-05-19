@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Save 7 Maths Master Version</title>
+  <!-- Basic Meta Tags -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Save 7! Catch the lucky 7 before time runs out!">
+  <meta name="author" content="Feng">
+  <meta name="keywords" content="Save 7, Number Game, Math Game, Language Game, Catching Game, Casual Game, HTML5 Game">
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Save 7!">
+  <meta property="og:description" content="Catch the lucky 7 before time runs out!">
+  <meta property="og:image" content="assets/favicon.png"> 
+  <!-- favicon -->
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <!-- libraries -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/tone@14.7.77/build/Tone.min.js"></script>
+  <style>
+    html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+    body {
+      height: 100%;
+  background: linear-gradient(135deg, #de58da, #eee8ff, #baefb9, #eee8ff);
+  background-size: 200% 200%;
+  animation: gradientShift 15s ease infinite;
+  margin: 0;
+  overflow: hidden;
+  font-family: 'Press Start 2P', cursive;
+  image-rendering: pixelated;
+  text-align: center;
+    }
+    @keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+#timer {
+      position: fixed;
+      top: 20px;
+      font-size: 32px;
+      font-weight: bold;
+      z-index: 999;
+      text-shadow: 2px 2px 0 #000;
+    }
+ #score-container{
+      top: 20px;
+      z-index: 999;
+      margin: 20px;
+    }
+    #score {
+      top: 20px;
+      font-size: 32px;
+      font-weight: bold;
+      z-index: 999;
+      text-shadow: 2px 2px 0 #000;
+      left: 20px;
+      color: #666666;
+    }
+    #timer {
+      right: 20px;
+      color: #4DA6FF;
+    }
+
+    .number {
+      position: absolute;
+      font-size: 40px;
+      font-weight: bold;
+      user-select: none;
+      padding: 10px;
+      white-space: nowrap;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+      background-color: transparent;
+    }
+
+    .seven {
+      color: #FF5E79;
+      text-shadow: 3px 3px 0 #800000;
+    }
+
+    .operator {
+      color: #4DA6FF;
+      text-shadow: 3px 3px 0 #000080;
+    }
+
+    .hook {
+  position: absolute;
+  width: 4px;
+  background: #888;
+  box-shadow: 3px 0 #000; /* 钩子线条的阴影 */
+  top: 0;
+  left: 0;
+  display: none;
+  image-rendering: pixelated;
+  z-index: 998;
+}
+
+/* 钩子头部（圆形部分） */
+.hook::after {
+  content: '';
+  position: absolute;
+  bottom: -32px;
+  left: -18px;
+  width: 36px;
+  height: 36px;
+  background: #888;
+  z-index: 999;
+  box-shadow: 3px 3px 0 #000;
+  image-rendering: pixelated;
+  clip-path: path('M18 0 A18 18 0 1 1 0 18 A5 5 0 1 0 18 0 Z');
+}
+
+/* 阴影部分（单独控制，下移） */
+.hook::before {
+  content: '';
+  position: absolute;
+  bottom: -35px; /* 比 ::after 更低（原 -32px → 现在 -35px） */
+  left: -15px; /* 水平偏移 3px（阴影向右下偏移） */
+  width: 36px;
+  height: 36px;
+  background: #000;
+  z-index: 997; /* 确保在 ::after 下方 */
+  image-rendering: pixelated;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cpath d='M18 0 A18 18 0 1 1 0 18 A5 5 0 1 0 18 0 Z' fill='black'/%3E%3C/svg%3E");
+  opacity: 1; /* 可选：让阴影稍微透明 */
+}
+
+
+
+    .notification {
+      position: fixed;
+      font-size: 24px;
+      font-weight: bold;
+      z-index: 1000;
+      animation: fadeOut 1s forwards;
+      pointer-events: none;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(20px); }
+    }
+
+#pauseButton {
+  color:  #666666;
+  text-shadow: 3px 3px 0 #000; 
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  font-family: "Press Start 2P", system-ui;
+  font-size: 40px; 
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+#pauseButton:hover {
+
+transform: translateX(-50%) scale(1.1); 
+text-shadow: 4px 4px 0 #000;
+}
+
+#menuOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 2000;
+      color: white;
+      font-family: "Press Start 2P", system-ui;
+      text-align: center;
+      padding-top: 150px;
+      background: rgba(255, 255, 255, 0.3); 
+      backdrop-filter: blur(5px); 
+    }
+    
+
+    #menuOverlay button {
+  margin: 10px;
+  font-family: "Press Start 2P", system-ui;
+  line-height: 1;       
+  font-size: 40px; 
+  width: 120px; 
+  height: 80px; 
+  cursor: pointer;
+  background: #C3F7FF;
+  color: #FF5E79;
+  border: none;
+  text-shadow: 3px 3px #000;
+  border-radius: 0;
+  image-rendering: pixelated;
+  box-shadow: 4px 8px #000;
+  transition: all 0.2s ease; 
+  position:relative;
+}
+
+/* symbols position */
+#menuOverlay button:first-child::before,
+#menuOverlay button:nth-child(2)::before {
+  content: "⏮︎"; 
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -55%); /* Y axis going up */
+}
+#menuOverlay button:nth-child(3)::before {
+  content: "⏵︎"; 
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -55%);  /* Y axis going up */
+}
+#menuOverlay button:nth-child(4)::before {
+  content: "↻";  /* 或 "⏵︎" */
+  position: absolute;
+  top: 47%;
+  left: 50%;
+  transform: translate(-50%, -55%);  /* Y axis going up */
+}
+#menuOverlay button:hover {
+  background: #FF5E79;
+  color: #ffffff;
+  box-shadow: 4px 12px #000;
+}
+
+.stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #FFF;
+  opacity: 0.8;
+  box-shadow: 2px 2px 0 #000;
+  animation: floatStar linear infinite;
+}
+
+@keyframes floatStar {
+  0% { transform: translateX(0) translateY(0); opacity: 0.8; }
+  50% { transform: translateX(50vw) translateY(calc(var(--y-drift) * 0.5)); opacity: 1; }
+  100% { transform: translateX(100vw) translateY(var(--y-drift)); opacity: 0; }
+}
+.lucky {
+  color: #FFD700; 
+  text-shadow: 
+    2px 2px 2px 2px #000,     
+} 
+
+@media (max-width: 600px) {
+  #timer-container {
+    position: fixed;
+    top: 100px;
+    bottom: auto;
+    left: 33%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    z-index: 999;
+  }
+
+  #timer {
+    left: 20px;
+    position: static;
+    font-size: 24px;
+    color: #4DA6FF;
+    text-shadow: 2px 2px 0 #000;
+    align-items: left;
+  }
+
+  #pauseButton {
+    position: absolute;
+    right: 20px;
+    left: auto;
+    top: 10px;
+    transform: none;
+  }
+}
+
+  </style>
+</head>
+<body>
+  
+  <div id="score-container" style="text-align: left;">
+  
+    <div id="score" style="color: #666666;">Score: 0</div>
+    <div id="highScore" style="margin-top: 8px;font-size: 18px; color: #666666; text-shadow: 2px 2px 0 #000; margin-bottom: 5px;">
+        High Score: 0
+    </div>
+    <div id="score-notification"></div>
+  </div>
+  
+      
+      <div id="timer-container">
+        <div id="timer">Time Left: <span id="timeLeft">77</span>s</div>
+        <div id="time-notification"></div>
+      </div>
+
+  <button id="pauseButton">⏸︎</button>
+
+  <div id="menuOverlay">
+    <div id="menuText" style="margin-bottom: 30px; font-size: 20px;"></div>
+    <button onclick="goHome()"><span style="opacity: 0;">⏮︎</span> </button>
+    <button id="resumeButton"><span style="opacity: 0;">⏵︎</span></button>
+    <button onclick="restartGame()"><span style="opacity: 0;">↻</span></button>
+
+  </div>
+
+  <div class="stars"></div>
+
+  <audio id="bgMusic" loop>
+    <source src="assets/dreamybgmusic.mp3" type="audio/mpeg">
+    </audio>
+  
+    <audio id="clickSound">
+        <source src="assets/click.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="catchSevenSound" src="assets/click7.mp3"></audio>
+    <audio id="catchOperatorSound" src="assets/clickoperatpr.mp3"></audio>
+    <audio id="buttonSound" src="assets/clickbutton.mp3"></audio>
+    <audio id="timesUpSound">
+      <source src="assets/timesup.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="highScoreSound" preload="auto">
+      <source src="assets/highscore.mp3" type="audio/mpeg">
+    </audio>
+    
+  
+    
+  
+  <script>
+    const scoreDisplay = document.getElementById("score");
+    const timeDisplay = document.getElementById("timeLeft");
+    const scoreNotification = document.getElementById("score-notification");
+    const timeNotification = document.getElementById("time-notification");
+    
+    
+    let score = 0;
+    let timeLeft = 77;
+    let gameActive = true;
+    let isHookActive = false;
+    let gameStartTime = Date.now();
+    let speedMultiplier = 1;
+    let isPaused = false;
+
+
+    let highScore = parseInt(localStorage.getItem('save7skyMathHighScore')) || 0;
+let highestTime = parseInt(localStorage.getItem('save7skyHighestTime')) || 0;
+let nextTickTime = Date.now() + 1000;  // Time of the next countdown tick
+
+
+
+    const hook = document.createElement("div");
+    hook.className = "hook";
+    document.body.appendChild(hook);
+
+    const numbers = [];
+    const operators = ["√t", "t+e^(ln(5))", "t×e^{\ln(2)}", "t+ln(e¹⁰)"];
+    const NUM_TOTAL = 20;
+    const numberColors = [
+  '#A0D6B4', // green
+  '#FFD1DC', // pink
+  '#B5EAD7', // light green
+  '#C7CEEA', // light purple
+  '#FFDAC1', // light pink
+  '#FFFFD1', // pastel yellow
+  '#CCE5FF'  // blue
+];
+
+const luckyNumbersMap = {
+  13: { text: "Γ(4)+e⁰", value: 13 },               // 6 + 1 = 7, Γ(4)=6, e⁰=1
+  17: { text: "ceil(16.1)", value: 17 },               // ceilling
+  19: { text: "√361", value: 19 },                     // square root
+  23: { text: "ln(e²³)", value: 23 },                  // ln(e²³) = 23
+  29: { text: "30-sin²(π/2)", value: 29 },           // sin²(π/2)=1
+  31: { text: "2⁵-1", value: 31 },                   // 32 - 1
+  37: { text: "6!/120-83", value: 37 },             // 6! = 720; 720/120 = 6; 6 - 83 = 37 
+  41: { text: "exp(ln(41))", value: 41 },              // e^(ln(41)) = 41
+  43: { text: "2*21+1", value: 43 },                // 43
+  47: { text: "7*7-2", value: 47 },                  // 49 - 2
+  53: { text: "floor(53.99)", value: 53 }                // floor
+};
+
+const bgMusic = document.getElementById('bgMusic');
+//const startOverlay = document.getElementById('startOverlay');
+
+const clickSound = document.getElementById('clickSound');
+const catchSevenSound = document.getElementById('catchSevenSound');
+const catchOperatorSound = document.getElementById('catchOperatorSound');
+const buttonSound = document.getElementById('buttonSound');
+const timesUpSound = document.getElementById('timesUpSound');
+const highScoreSound = document.getElementById('highScoreSound');
+
+document.getElementById("highScore").textContent = `High Score: ${highScore}`;
+
+
+let musicEnabled = true;
+let hasGameStarted = false;
+
+//document.getElementById('startOverlay').addEventListener('click', () => {
+//    bgMusic.play();
+//    document.getElementById('startOverlay').style.display = 'none';
+//});
+
+
+//document.addEventListener("click", () => {
+//    if (bgMusic.paused) {
+        bgMusic.play();
+//    }
+//    hasGameStarted = true;  // 游戏正式开始
+//    gameStartTime = Date.now(); // 重新计算加速时间
+//}, { once: true });  // 确保只触发一次
+
+
+
+// 初始化音乐（需要用户交互后播放）
+function initMusic() {
+  bgMusic.volume = 0.3;
+  clickSound.volume = 0.5;
+  document.body.addEventListener('click', () => {
+    if (musicEnabled && bgMusic.paused) {
+      bgMusic.play();
+    }
+  }, { once: true });
+}
+initMusic();
+
+
+
+
+    function showNotification(text, color, type) {
+      const notification = document.createElement("div");
+      notification.className = "notification";
+      notification.textContent = text;
+      notification.style.color = color;
+      
+      if (type === "score") {
+        scoreNotification.appendChild(notification);
+        notification.style.left = "0";
+        notification.style.top = "40px";
+      } else {
+        timeNotification.appendChild(notification);
+        notification.style.right = "0";
+        notification.style.top = "40px";
+      }
+      
+      setTimeout(() => notification.remove(), 1000);
+    }
+    function applyOperator(op) {
+  let change = 0, notificationText = "", color = "green";
+
+  if (op === "+10") {
+    change = 10; notificationText = "+10s";
+  } else if (op === "-5") {
+    change = -5; notificationText = "-5s"; color = "red";
+  } else if (op === "×2") {
+    timeLeft *= 2; notificationText = "×2";
+  } else if (op === "÷2") {
+    timeLeft = Math.max(5, Math.floor(timeLeft / 2)); notificationText = "÷2"; color = "red";
+  }
+
+  if (op === "+10" || op === "-5") {
+    timeLeft = Math.min(120, Math.max(0, timeLeft + change));
+  }
+
+  timeDisplay.textContent = timeLeft;
+
+  // Delay the next tick to keep new value visible for 1 second
+  nextTickTime = Date.now() + 1000;
+
+  showNotification(notificationText, color, "time");
+}
+
+
+    
+    function getUnlockedSevenExpressions() {
+  return [
+    { text: "√49", value: 7 },
+    { text: "log₁₀(10⁷)", value: 7 },
+    { text: "14/2", value: 7 },
+    { text: "3!+1", value: 7 },
+    { text: "2³-1", value: 7 },
+    { text: "ceil(6.2)", value: 7 },
+    { text: "Γ(4)+e⁰", value: 7 },
+    { text: "sin²(π/2)+6", value: 7 }
+  ];
+}
+
+
+ 
+    const mathExpressions = [
+      { text: "Γ(2)", value: 1 },
+      { text: "Γ(3)", value: 2 },
+      { text: "limₙ→∞(1+1/n)ⁿ", value: 3 },
+      { text: "2^2", value: 4 },
+      { text: "sin²(π/2)×5", value: 5 },
+      { text: "Γ(4)", value: 6 },
+      { text: "2+e^(iπ)", value: 8 },
+      { text: "3^2", value: 9 }
+    ];
+
+    function createEntity(initial = false) {
+      const div = document.createElement("div");
+      const isOperator = Math.random() < 0.2;
+      const isLucky = Math.random() < 0.1; // 10% chance of Lucky Number
+      let val, text;
+      if (isLucky) {
+        const luckyKeys = Object.keys(luckyNumbersMap);
+  const luckyVal = luckyKeys[Math.floor(Math.random() * luckyKeys.length)];
+  const luckyEntry = luckyNumbersMap[luckyVal];
+  val = luckyEntry.value;    
+  text = luckyEntry.text;   
+  div.className = "number lucky";
+} else
+if (isOperator) {
+    const gameTime = (Date.now() - gameStartTime) / 1000;
+    const sqrtChance = Math.min(0.25 + (gameTime / 120), 0.75); // Increases over time
+
+    if (Math.random() < sqrtChance) {
+        text = "√t";
+    } else {
+        text = operators[Math.floor(Math.random() * operators.length)];
+    }
+
+    div.className = "number operator";
+    val = text;
+} else {
+        const isSeven = Math.random() < 0.25;
+        if (isSeven) {
+  const sevens = getUnlockedSevenExpressions();
+  const picked = sevens[Math.floor(Math.random() * sevens.length)];
+  text = picked.text;
+  val = 7;
+  div.className = "number seven";
+} else {
+  const picked = mathExpressions[Math.floor(Math.random() * mathExpressions.length)];
+  text = picked.text;
+  val = picked.value;
+  div.className = "number";
+
+
+  const color = numberColors[Math.floor(Math.random() * numberColors.length)];
+  div.style.color = color;
+}
+
+      }
+
+      div.textContent = text;
+
+      const fontSize = 32 + Math.floor(Math.random() * 16);
+      div.style.fontSize = `${fontSize}px`;
+
+      const baseY = 100 + Math.random() * (window.innerHeight - 200);
+      const left = initial 
+        ? (window.innerWidth / NUM_TOTAL) * numbers.length + (Math.random() * 50 - 25)
+        : -450 - Math.random() * 300;
+
+      div.style.left = `${left}px`;
+      div.style.top = `${baseY}px`;
+
+      document.body.appendChild(div);
+
+      numbers.push({
+        el: div,
+        value: val,
+        isOperator,
+        speed: 1 + Math.random() * 1.5,
+        hooked: false,
+        floatTime: 0,
+        baseY:baseY,
+        floatSpeed: 0.5 + Math.random(),
+        floatHeight: 20 + Math.random() * 30
+      });
+    }
+
+    function animate() {
+  if (!gameActive || isPaused ) return;
+
+  const gameTime = (Date.now() - gameStartTime) / 1000;
+  speedMultiplier = Math.min(3, 1 + gameTime / 150.0);
+
+  numbers.forEach(n => {
+    if (n.hooked) return;
+    const x = parseFloat(n.el.style.left) + n.speed * speedMultiplier;
+    const y = n.baseY + Math.sin(n.floatTime * n.floatSpeed) * n.floatHeight;
+    n.el.style.left = `${x}px`;
+    n.el.style.top = `${y}px`;
+    n.floatTime += 0.01;
+
+    if (x > window.innerWidth + 100) {  // delete after getting out of sight
+      n.el.remove();
+      numbers.splice(numbers.indexOf(n), 1);
+    }
+  });
+
+  // maintain enough number in screen
+  while (numbers.length < NUM_TOTAL) {
+    createEntity(false);
+  }
+
+  requestAnimationFrame(animate);
+}
+
+    for (let i = 0; i < NUM_TOTAL; i++) createEntity(true);
+    animate();
+
+    document.addEventListener("click", e => {
+      if (!gameActive || isPaused || isHookActive ) return;
+      isHookActive = true;
+
+      const hookX = e.clientX;
+      hook.style.left = `${hookX}px`;
+      hook.style.height = `0px`;
+      hook.style.display = "block";
+
+      let h = 0;
+      const interval = setInterval(() => {
+        if (isPaused) return;  
+        if (timeLeft <= 0) {
+   
+      clearInterval(interval); 
+      hook.style.display = "block"; 
+       isHookActive = false;
+       hook.style.height = `${h}px`;
+      return;
+      }
+        h += 10;
+        hook.style.height = `${h}px`;
+
+        const hit = numbers.find(n => {
+          if (n.hooked) return false;
+          const r = n.el.getBoundingClientRect();
+          return r.left < hookX && r.right > hookX && r.top < h;
+        });
+
+        if (hit) {
+          clearInterval(interval);
+          hit.hooked = true;
+          if (hit.isOperator) {
+    const operatorSound = catchOperatorSound.cloneNode(true);
+    operatorSound.currentTime = 0;
+    operatorSound.play();
+} else {
+    if (hit.value === 7) {
+        const sevenSound = catchSevenSound.cloneNode(true);
+        sevenSound.currentTime = 0;
+        sevenSound.play();
+    } else {
+        const normalSound = clickSound.cloneNode(true);
+        normalSound.currentTime = 0;
+        normalSound.play();
+    }
+}
+
+          const rect = hit.el.getBoundingClientRect();
+
+          hit.el.style.position = "fixed";
+          hit.el.style.left = `${rect.left}px`;
+          hit.el.style.top = `${rect.top}px`;
+          hit.el.style.zIndex = 1000;
+
+          let lift = rect.top;
+          const liftUp = setInterval(() => {
+            if (isPaused) return;  
+              if (timeLeft <= 0) {
+  
+        clearInterval(interval); 
+       hook.style.display = "block"; 
+         isHookActive = false;
+         hook.style.height = `${lift}px`;
+        return;
+        }
+            lift -= 10;
+            hook.style.height = `${lift}px`;
+            hit.el.style.top = `${lift}px`;
+            if (lift <= 0) {
+              clearInterval(liftUp);
+              hook.style.display = "none";
+              hit.el.remove();
+              numbers.splice(numbers.indexOf(hit), 1);
+
+              if (hit.isOperator) {
+                const isLucky = hit.el.classList.contains('lucky');
+const points = hit.value === 7 ? 77 : parseInt(hit.value) || 0;
+score += points;
+scoreDisplay.textContent = `Score: ${score}`;
+showNotification(`+${points}`, hit.value === 7 ? "#FF2222" : (isLucky ? "#33AA33" : "#33AA33"), "score");
+
+              let change = 0, notificationText = "", color = "green";
+  switch (hit.value) {
+    case "√t":
+    timeLeft = Math.sqrt(timeLeft);
+    notificationText = "time sqrt";
+    color = "red";
+      break;
+    case "t+e^(ln(5))":
+      timeLeft += 5;
+      notificationText = "+5s";
+      break;
+    case "t×e^{\ln(2)}":
+      timeLeft *= 2;
+      notificationText = "×2";
+      break;
+    case "t+ln(e¹⁰)":
+      timeLeft += 10;
+      notificationText = "+10s";
+      break;
+  }
+  timeLeft = Math.max(0, Math.floor(timeLeft));
+timeDisplay.textContent = timeLeft;
+
+showNotification(notificationText, color, "time");
+} else {
+  const points = hit.value === 7 ? 77 : hit.value;
+  score += points;
+  scoreDisplay.textContent = `Score: ${score}`;
+  showNotification(`+${points}`, hit.value === 7 ? "#FF2222" : "#33AA33", "score");
+              
+}
+
+              createEntity();
+              isHookActive = false;
+            }
+          }, 16);
+        } else if (h > window.innerHeight) {
+  clearInterval(interval);
+  if (timeLeft <= 0) {
+  
+    clearInterval(interval); 
+  hook.style.display = "block"; 
+  isHookActive = false;
+  return;
+  }
+  let returnHeight = window.innerHeight;
+  const returnInterval = setInterval(() => {
+    if(isPaused)return;
+      if (timeLeft <= 0) {
+        clearInterval(interval); 
+       hook.style.display = "block";
+         isHookActive = false;
+         hook.style.height = `${returnHeight}px`;
+        return;
+        }
+    returnHeight -= 10;
+    hook.style.height = `${returnHeight}px`;
+    if (returnHeight <= 0) {
+      clearInterval(returnInterval);
+      hook.style.display = "none";
+      isHookActive = false;
+    }
+  }, 16);
+}
+
+      }, 16);
+    });
+    
+    const timer = setInterval(() => {
+  if (!gameActive || isPaused || isHookActive) return;
+   
+  const currentTime = Date.now();
+  
+  // If it's time to update the timer
+  if (currentTime >= nextTickTime) {
+    timeLeft = Math.max(0, timeLeft - 1);  
+    timeDisplay.textContent = timeLeft;
+    nextTickTime = currentTime + 1000; // Schedule next tick
+
+    if (timeLeft <= 0) {
+      gameActive = false;
+      clearInterval(timer);
+       // 停止所有音效和背景音乐
+ bgMusic.pause();
+    clickSound.pause();
+    catchSevenSound.pause();
+    catchOperatorSound.pause();
+    buttonSound.pause();
+
+    // 可选：重置播放位置，下次从头开始
+    bgMusic.currentTime = 0;
+    clickSound.currentTime = 0;
+    catchSevenSound.currentTime = 0;
+    catchOperatorSound.currentTime = 0;
+    buttonSound.currentTime = 0;
+   
+      if (score > highScore) {
+    highScore = score;
+    localStorage.setItem('save7skyMathHighScore', highScore);
+    document.getElementById("highScore").textContent = `High Score: ${highScore}`;
+    highScoreSound.currentTime = 0;
+    highScoreSound.play();
+  } else {
+    timesUpSound.currentTime = 0;
+    timesUpSound.play();
+  }
+
+      hook.style.transition = "none"; 
+
+      // Update High Scores
+      const totalTime = 77 - timeLeft;
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('save7skyMathHighScore', highScore);
+      }
+      if (totalTime > highestTime) {
+        highestTime = totalTime;
+        localStorage.setItem('save7skyHighestTime', highestTime);
+      }
+
+      document.getElementById("menuText").innerHTML = `
+        <div style="color: #FF5E79; text-shadow: 3px 3px 0 #000; font-size: 48px; margin-bottom: 30px;">
+          Time's Up!
+        </div>
+        <div style="color: #666666; text-shadow: 3px 3px 0 #000; font-size: 32px; margin-bottom: 20px;">Score: ${score}</div>
+        <div style="color: #666666; text-shadow: 3px 3px 0 #000; font-size: 32px;">High Score: ${highScore}</div>
+      `;
+
+      document.getElementById("menuOverlay").style.display = "block";
+      document.getElementById("resumeButton").style.display = "none";
+    }
+  }
+}, 100); // Check every 100ms for more accurate timing
+
+function pauseGame() {
+      isPaused = true;
+      bgMusic.pause();  
+      document.getElementById("menuText").innerHTML = "<div style='color: #FF5E79;text-shadow: 3px 3px 0 #000000 ; font-size: 32px'>Game Paused</div>";
+      document.getElementById("menuOverlay").style.display = "block";
+      hook.style.transition = "none"; // 停止动画平滑效果
+    }
+    function resumeGame() {
+      isPaused = false;
+      document.getElementById("menuOverlay").style.display = "none";
+      animate(); 
+      if (musicEnabled && bgMusic.paused) {
+        bgMusic.play();  // 恢复播放，不会从头开始
+    }
+    }
+   
+    function restartGame() {
+     const newAudio = buttonSound.cloneNode(true); // 关键！
+    newAudio.currentTime = 0;
+    newAudio.play();
+    setTimeout(() => location.reload(), 500);
+    }
+
+
+    function goHome() {
+    const newAudio = buttonSound.cloneNode(true); // 关键！
+    newAudio.currentTime = 0;
+    newAudio.play();
+    setTimeout(() =>  window.location.href = "index.html",500); // 确保音效播放后跳转
+}
+    document.getElementById("pauseButton").addEventListener("click", () => {
+    buttonSound.currentTime = 0;
+    buttonSound.play();
+    pauseGame();
+});
+
+    document.getElementById("resumeButton").addEventListener("click", function(event) {
+    //buttonSound.currentTime = 0;
+    // buttonSound.play();
+    const newAudio = buttonSound.cloneNode(true); // 关键！
+    newAudio.currentTime = 0;
+    newAudio.play().then(() => {
+    //   event.stopPropagation();
+           resumeGame();
+    }).catch(() => {
+       //event.stopPropagation();
+           resumeGame();
+    });
+});
+
+function playHighscoreSound() {
+  const highscoreSound = document.getElementById('highscoreSound');
+  if (highscoreSound) {
+    highscoreSound.currentTime = 0; // 重置播放位置
+    highscoreSound.play();
+  }
+}
+
+
+
+  const starsContainer = document.querySelector('.stars');
+const STAR_COUNT = 50;
+
+for (let i = 0; i < STAR_COUNT; i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+
+  const duration = 10 + Math.random() * 10;
+  star.style.animationDuration = `${duration}s`;
+
+  star.style.left = `-10px`;
+  star.style.top = `${Math.random() * 100}vh`;
+
+  const progress = Math.random();
+  star.style.animationDelay = `${-progress * duration}s`;
+
+  const colors = ['#FFFFFF', '#FFDDEE', '#CCEEFF', '#FFFFCC'];
+  star.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+  const yDrift = (Math.random() - 0.5) * 100;
+  star.style.setProperty('--y-drift', `${yDrift}px`);
+
+  starsContainer.appendChild(star);
+}
+  </script>
+</body>
+</html>

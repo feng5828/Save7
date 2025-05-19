@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Save 7 Lanugae Master Version</title>
+  <!-- Basic Meta Tags -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Save 7! Catch the lucky 7 before time runs out!">
+  <meta name="author" content="Feng">
+  <meta name="keywords" content="Save 7, Number Game, Math Game, Language Game, Catching Game, Casual Game, HTML5 Game">
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Save 7!">
+  <meta property="og:description" content="Catch the lucky 7 before time runs out!">
+  <meta property="og:image" content="assets/favicon.png"> 
+  <!-- favicon -->
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <!-- libraries -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/tone@14.7.77/build/Tone.min.js"></script>
+  <style>
+   @font-face {
+  font-family: 'PixelMplus10-Regular';
+  src: url('https://cdn.leafscape.be/PixelMplus/PixelMplus10-Regular_web.woff2') format('woff2');
+  unicode-range: U+4E00-9FFF, U+3040-309F, U+30A0-30FF; /* 汉字 + ひらがな + カタカナ */
+}
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+body {
+  height: 100%;
+  background: linear-gradient(135deg, #58ded3, #fffff2, #e89db5, #f9ffeb);
+  background-size: 200% 200%;
+  animation: gradientShift 15s ease infinite;
+  margin: 0;
+  overflow: hidden;
+  font-family: 'Press Start 2P', cursive;
+  image-rendering: pixelated;
+  text-align: center;
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+  #timer {
+      position: fixed;
+      top: 20px;
+      font-size: 32px;
+      font-weight: bold;
+      z-index: 999;
+      text-shadow: 2px 2px 0 #000;
+    }
+ #score-container{
+      top: 20px;
+      z-index: 999;
+      margin: 20px;
+    }
+    #score {
+      top: 20px;
+      font-size: 32px;
+      font-weight: bold;
+      z-index: 999;
+      text-shadow: 2px 2px 0 #000;
+      left: 20px;
+      color: #666666;
+    }
+
+    #timer {
+      right: 20px;
+      color: #4DA6FF;
+    }
+
+   
+
+    .number {
+     
+  color: #A0D6B4; /* 给个默认柔和色，而不是黑色 */
+      position: absolute;
+      font-size: 40px;
+      font-weight: bold;
+      user-select: none;
+      padding: 10px;
+      white-space: nowrap;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+      background-color: transparent;
+      font-family: 'PixelMplus10-Regular', 'Press Start 2P', cursive;
+    }
+
+    .seven {
+      color: #FF5E79;
+      text-shadow: 3px 3px 0 #800000;
+    }
+
+    .operator {
+      color: #4DA6FF;
+      text-shadow: 3px 3px 0 #000080;
+    }
+
+    .hook {
+  position: absolute;
+  width: 4px;
+  background: #888;
+  box-shadow: 3px 0 #000;
+  top: 0;
+  left: 0;
+  display: none;
+  image-rendering: pixelated;
+  z-index: 998;
+}
+
+/* 更大、更弯的钩爪形状 */
+.hook {
+  position: absolute;
+  width: 4px;
+  background: #888;
+  box-shadow: 3px 0 #000; /* 钩子线条的阴影 */
+  top: 0;
+  left: 0;
+  display: none;
+  image-rendering: pixelated;
+  z-index: 998;
+}
+
+/* 钩子头部（圆形部分） */
+.hook::after {
+  content: '';
+  position: absolute;
+  bottom: -32px;
+  left: -18px;
+  width: 36px;
+  height: 36px;
+  background: #888;
+  z-index: 999;
+  box-shadow: 3px 3px 0 #000;
+  image-rendering: pixelated;
+  clip-path: path('M18 0 A18 18 0 1 1 0 18 A5 5 0 1 0 18 0 Z');
+}
+
+/* 阴影部分（单独控制，下移） */
+.hook::before {
+  content: '';
+  position: absolute;
+  bottom: -35px; /* 比 ::after 更低（原 -32px → 现在 -35px） */
+  left: -15px; /* 水平偏移 3px（阴影向右下偏移） */
+  width: 36px;
+  height: 36px;
+  background: #000;
+  z-index: 997; /* 确保在 ::after 下方 */
+  image-rendering: pixelated;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cpath d='M18 0 A18 18 0 1 1 0 18 A5 5 0 1 0 18 0 Z' fill='black'/%3E%3C/svg%3E");
+  opacity: 1; /* 可选：让阴影稍微透明 */
+}
+
+
+
+    .notification {
+      position: fixed;
+      font-size: 24px;
+      font-weight: bold;
+      z-index: 1000;
+      animation: fadeOut 1s forwards;
+      pointer-events: none;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(20px); }
+    }
+
+#pauseButton {
+  color:  #666666;
+  text-shadow: 3px 3px 0 #000; /* 添加阴影 */
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  font-family: "Press Start 2P", system-ui;
+  font-size: 40px; /* 稍微大一些 */
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+#pauseButton:hover {
+
+transform: translateX(-50%) scale(1.1);  /* 稍微放大 */
+text-shadow: 4px 4px 0 #000;
+}
+
+#menuOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 2000;
+      color: white;
+      font-family: "Press Start 2P", system-ui;
+      text-align: center;
+      padding-top: 150px;
+      background: rgba(255, 255, 255, 0.3); /* 柔和白色蒙版 */
+      backdrop-filter: blur(5px); /* 加一点毛玻璃效果 */
+    }
+    
+    #menuOverlay button {
+  margin: 10px;
+  font-family: "Press Start 2P", system-ui;
+  font-size: 40px; 
+  line-height: 1;  
+  width: 120px; 
+  height: 80px; 
+  cursor: pointer;
+  background: #C3F7FF;
+  color: #FF5E79;
+  border: none;
+  text-shadow: 3px 3px #000;
+  border-radius: 0;
+  image-rendering: pixelated;
+  box-shadow: 4px 8px #000;
+  transition: all 0.2s ease; /* Smooth transition added */
+  position:relative;
+}
+/* symbols position */
+#menuOverlay button:first-child::before,
+#menuOverlay button:nth-child(2)::before {
+  content: "⏮︎"; 
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -55%); /* Y axis going up */
+}
+#menuOverlay button:nth-child(3)::before {
+  content: "⏵︎"; 
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -55%);  /* Y axis going up */
+}
+#menuOverlay button:nth-child(4)::before {
+  content: "↻";  /* 或 "⏵︎" */
+  position: absolute;
+  top: 47%;
+  left: 50%;
+  transform: translate(-50%, -55%);  /* Y axis going up */
+}
+#menuOverlay button:hover {
+  background: #FF5E79;
+  color: #ffffff;
+  box-shadow: 4px 12px #000;
+}
+
+
+.stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #FFF;
+  opacity: 0.8;
+  box-shadow: 2px 2px 0 #000;
+  animation: floatStar linear infinite;
+}
+
+@keyframes floatStar {
+  0% { transform: translateX(0) translateY(0); opacity: 0.8; }
+  50% { transform: translateX(50vw) translateY(calc(var(--y-drift) * 0.5)); opacity: 1; }
+  100% { transform: translateX(100vw) translateY(var(--y-drift)); opacity: 0; }
+}
+
+.lucky {
+  color: #FFD700; /* 金色 */
+  text-shadow: 
+    2px 2px 2px 2px #000,        /* 主黑色阴影 */
+} 
+
+
+@media (max-width: 600px) {
+  #timer-container {
+    position: fixed;
+    top: 100px;
+    bottom: auto;
+    left: 33%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    z-index: 999;
+  }
+
+  #timer {
+    left: 20px;
+    position: static;
+    font-size: 24px;
+    color: #4DA6FF;
+    text-shadow: 2px 2px 0 #000;
+    align-items: left;
+  }
+
+  #pauseButton {
+    position: absolute;
+    right: 20px;
+    left: auto;
+    top: 10px;
+    transform: none;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <!--<div id="startOverlay" style="
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100vw; height: 100vh; 
+  background: rgba(255, 255, 255, 0.3); 
+  backdrop-filter: blur(5px);
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  z-index: 3000;
+  font-family: 'Press Start 2P', cursive; 
+  color: #FF5E79; 
+  text-shadow: 3px 3px 0 #000;
+  font-size: 32px;
+  cursor: pointer;">
+  Click to Start
+</div>-->
+
+
+
+<div id="score-container" style="text-align: left;">
+  
+  <div id="score" style="color: #666666;">Score: 0</div>
+  <div id="highScore" style="margin-top: 8px;font-size: 18px; color: #666666; text-shadow: 2px 2px 0 #000; margin-bottom: 5px;">
+      High Score: 0
+  </div>
+  <div id="score-notification"></div>
+</div>
+
+
+      
+      <div id="timer-container">
+        <div id="timer">Time Left: <span id="timeLeft">77</span>s</div>
+        <div id="time-notification"></div>
+      </div>
+
+  <button id="pauseButton">⏸︎</button>
+  
+  <audio id="bgMusic" autoplay loop>
+  <source src="assets/dreamybgmusic.mp3" type="audio/mpeg">
+  </audio>
+
+  <audio id="clickSound">
+      <source src="assets/click.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="catchSevenSound" src="assets/click7.mp3"></audio>
+  <audio id="catchOperatorSound" src="assets/clickoperatpr.mp3"></audio>
+  <audio id="buttonSound" src="assets/clickbutton.mp3"></audio>
+  <audio id="timesUpSound">
+    <source src="assets/timesup.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="highScoreSound" preload="auto">
+    <source src="assets/highscore.mp3" type="audio/mpeg">
+  </audio>
+  
+
+  
+  <div id="menuOverlay">
+    <div id="menuText" style="margin-bottom: 30px; font-size: 20px;"></div>
+    <button onclick="goHome()"><span style="opacity: 0;">⏮︎</span> </button>
+    <button id="resumeButton"><span style="opacity: 0;">⏵︎</span></button>
+    <button onclick="restartGame()"><span style="opacity: 0;">↻</span></button>
+
+  </div>
+  <div class="stars"></div>
+  <script>
+    
+    const scoreDisplay = document.getElementById("score");
+    const timeDisplay = document.getElementById("timeLeft");
+    const scoreNotification = document.getElementById("score-notification");
+    const timeNotification = document.getElementById("time-notification");
+    
+    
+    let score = 0;
+    let timeLeft = 77;
+    let gameActive = true;
+    let isHookActive = false;
+     //let catchPauseTime = 0;
+    let gameStartTime = Date.now();
+    let speedMultiplier = 1;
+    let isPaused = false;
+
+
+    let highScore = parseInt(localStorage.getItem('save7skyLanguageHighScore')) || 0;
+let highestTime = parseInt(localStorage.getItem('save7skyHighestTime')) || 0;
+let nextTickTime = Date.now() + 1000;  // Time of the next countdown tick
+
+
+
+const numberColors = [
+  '#A0D6B4', // 薄荷绿（清新不刺眼）
+  '#FFD1DC', // 柔粉色
+  '#B5EAD7', // 浅绿色
+  '#C7CEEA', // 淡紫色
+  '#FFDAC1', // 奶油粉
+  '#FFFFD1', // 柔和淡黄
+  '#CCE5FF'  // 天空蓝
+];
+
+
+
+    const hook = document.createElement("div");
+    hook.className = "hook";
+    document.body.appendChild(hook);
+
+    const numbers = [];
+    const operators = [
+  "plus ten",
+  "plus ten",
+  "più dieci",
+  "kymmenen lisää",
+  "プラス10",
+
+  "减五",
+  "minus five",
+  "meno cinque",
+  "miinus viisi",
+  "マイナス5",
+
+  "multiply by two",
+  "multiply by two",
+  "moltiplica per due",
+  "kerro kahdella",
+  "かける2",
+
+  "除以二",
+  "divided by two",
+  "diviso per due",
+  "jaettuna kahdella",
+  "わる2",
+
+  "减十",
+  "minus ten",
+  "meno dieci",
+  "miinus lisää",
+  "マイナス10"
+];
+
+    const NUM_TOTAL = 25;
+    const luckyNumbersMap = {
+  13: { text: "十三", lang: "zh" },         // 中文
+  17: { text: "じゅうなな", lang: "ja" },    // 日语
+  19: { text: "十九", lang: "zh" },         // 中文
+  23: { text: "twenty-three", lang: "en" }, // 英语
+  29: { text: "ventinove", lang: "it" },    // 意大利语
+  31: { text: "三十一", lang: "zh" },        // 中文
+  37: { text: "三十七", lang: "fi" }, // 芬兰语
+  41: { text: "quarantuno", lang: "it" },   // 意大利语
+  43: { text: "forty-three", lang: "en" },  // 英语
+  47: { text: "しじゅうなな", lang: "ja" },   // 日语
+  53: { text: "viisikymmentäkolme", lang: "fi" } // 芬兰语
+};
+
+const bgMusic = document.getElementById('bgMusic');
+const startOverlay = document.getElementById('startOverlay');
+
+const clickSound = document.getElementById('clickSound');
+const catchSevenSound = document.getElementById('catchSevenSound');
+const catchOperatorSound = document.getElementById('catchOperatorSound');
+const buttonSound = document.getElementById('buttonSound');
+const timesUpSound = document.getElementById('timesUpSound');
+const highScoreSound = document.getElementById('highScoreSound');
+
+document.getElementById("highScore").textContent = `High Score: ${highScore}`;
+
+let musicEnabled = true;
+//let hasGameStarted = false;
+
+//document.getElementById('startOverlay').addEventListener('click', () => {
+//    bgMusic.play();
+//    document.getElementById('startOverlay').style.display = 'none';
+//});
+
+
+//document.addEventListener("click", () => {
+//    if (bgMusic.paused) {
+//        bgMusic.play();
+//   }
+//    hasGameStarted = true;  // 游戏正式开始
+//    gameStartTime = Date.now(); // 重新计算加速时间
+//}, { once: true });  // 确保只触发一次
+
+
+
+// 初始化音乐（需要用户交互后播放）
+function initMusic() {
+  bgMusic.volume = 0.3;
+  clickSound.volume = 0.5;
+  document.body.addEventListener('click', () => {
+    if (musicEnabled && bgMusic.paused) {
+      bgMusic.play();
+    }
+  }, { once: true });
+}
+initMusic();
+
+
+
+    function showNotification(text, color, type) {
+      const notification = document.createElement("div");
+      notification.className = "notification";
+      notification.textContent = text;
+      notification.style.color = color;
+      
+      if (type === "score") {
+        scoreNotification.appendChild(notification);
+        notification.style.left = "0";
+        notification.style.top = "40px";
+      } else {
+        timeNotification.appendChild(notification);
+        notification.style.right = "0";
+        notification.style.top = "40px";
+      }
+      
+      setTimeout(() => notification.remove(), 1000);
+    }
+    function applyOperator(op) {
+  let change = 0, notificationText = "", color = "green";
+
+  if (op === "+10") {
+    change = 10;
+    notificationText = "+10s";
+  } else if (op === "-5") {
+    change = -5;
+    notificationText = "-5s";
+    color = "red";
+  } else if (op === "×2") {
+    timeLeft *= 2;
+    notificationText = "×2";
+  } else if (op === "÷2") {
+    timeLeft = Math.max(5, Math.floor(timeLeft / 2));
+    notificationText = "÷2";
+    color = "red";
+  } else if (op === "-10") {
+    change = -10;
+    notificationText = "-10s";
+    color = "red";
+  }
+  if (op === "+10" || op === "-5") {
+    timeLeft = Math.min(120, Math.max(0, timeLeft + change));
+  }
+  
+
+  // ✅ Immediately update the displayed time
+  timeDisplay.textContent = timeLeft;
+
+  showNotification(notificationText, color, "time");
+}
+
+
+    // 解锁机制 - 更高级表达式随着分数增加出现
+    function getUnlockedSevenExpressions() {
+  return [
+    { text: "七", value: 7 },
+    { text: "なな", value: 7 },
+    { text: "seven", value: 7 },
+    { text: "sette", value: 7 },
+    { text: "seitsemän", value: 7 }
+  ];
+}
+
+    // 非7的表达式
+    const languageNumbers = [
+  { text: "一", value: 1 },        // Chinese
+  { text: "二", value: 2 },
+  { text: "三", value: 3 },
+  { text: "四", value: 4 },
+  { text: "五", value: 5 },
+  { text: "六", value: 6 },
+  { text: "七", value: 7 },
+  { text: "八", value: 8 },
+  { text: "九", value: 9 },
+  { text: "いち ", value: 1 },  // Japanese Hiragana (optional)
+  { text: "に ", value: 2 },
+  { text: "さん ", value: 3 },
+  { text: "よん ", value: 4 },
+  { text: "ご ", value: 5},
+  { text: "ろく ", value: 6 },
+  { text: "なな", value: 7 },
+  { text: "はち ", value: 8 },
+  { text: "きゅう ", value: 9},
+
+  { text: "one", value: 1 },  //English
+  { text: "two", value: 2 },
+  { text: "three", value: 3 },
+  { text: "four", value: 4 },
+  { text: "five", value: 5 },
+  { text: "six", value: 6 },
+  { text: "seven", value: 7 },
+  { text: "eight", value: 8 },
+  { text: "nine", value: 9 },
+
+  { text: "uno", value: 1 }, //Italian
+  { text: "due", value: 2 },
+  { text: "tre", value: 3 },
+  { text: "quattro", value: 4 },
+  { text: "cinque", value: 5 },
+  { text: "sei", value: 6 },
+  { text: "sette", value: 7 },
+  { text: "otto", value: 8 },
+  { text: "nove", value: 9 },
+
+  { text: "yksi", value: 1 }, //FInnish
+  { text: "kaksi", value: 2 },
+  { text: "kolme", value: 3 },
+  { text: "neljä", value: 4 },
+  { text: "viisi", value: 5 },
+  { text: "kuusi", value: 6 },
+  { text: "seitsemän", value: 7 },
+  { text: "kahdeksan", value: 8 },
+  { text: "yhdeksän", value: 9 }
+];
+
+
+    function createEntity(initial = false) {
+      const div = document.createElement("div");
+      const gameTime = (Date.now() - gameStartTime) / 1000;
+const operatorBaseChance = 0.2;
+const isOperator = Math.random() < operatorBaseChance;
+
+     const isLucky = Math.random() < 0.1; // 10% 概率生成 Lucky Number
+      let val, text;
+      if (isLucky) {
+        const luckyKeys = Object.keys(luckyNumbersMap);
+  const luckyVal = luckyKeys[Math.floor(Math.random() * luckyKeys.length)];
+  const luckyEntry = luckyNumbersMap[luckyVal];
+
+  val = parseInt(luckyVal);  // 保持数值用于分数计算
+  text = luckyEntry.text;    // 显示语言表达
+  div.className = "number lucky";
+  div.textContent = text;    // 设置显示的文本
+} else 
+if (isOperator) {
+    const negativeBias = Math.min(0.25 + (gameTime / 120), 0.75);  // Time-based scaling
+    const negativeOperators = [
+        "减五", "minus five", "meno cinque", "miinus viisi", "マイナス5",
+        "减十", "minus ten", "meno dieci", "miinus lisää", "マイナス10",
+        "除以二", "divided by two", "diviso per due", "jaettuna kahdella", "わる2"
+    ];
+
+    const isNegative = Math.random() < negativeBias;
+
+    if (isNegative) {
+        text = negativeOperators[Math.floor(Math.random() * negativeOperators.length)];
+    } else {
+        text = operators[Math.floor(Math.random() * operators.length)];
+    }
+
+    div.className = "number operator";
+    val = text;
+} else {
+
+        const isSeven = Math.random() < 0.25;
+        if (isSeven) {
+          const sevens = getUnlockedSevenExpressions();
+          const picked = sevens[Math.floor(Math.random() * sevens.length)];
+          text = picked.text;
+          val = 7;
+          div.className = "number seven";
+        } else {
+          const picked = languageNumbers[Math.floor(Math.random() * languageNumbers.length)];
+text = picked.text;
+val = picked.value;
+
+if (picked.value === 7) {
+  div.className = "number seven";
+} else {
+  div.className = "number";
+  // 应用随机颜色
+  const randomColor = numberColors[Math.floor(Math.random() * numberColors.length)];
+  div.style.color = randomColor;
+}
+
+
+          div.className = "number";
+        }
+        
+      }
+
+      div.textContent = text;
+      const fontSize = 32 + Math.floor(Math.random() * 16);
+      div.style.fontSize = `${fontSize}px`;
+      // 强制保证代表 7 的字符使用 "seven" 样式（红色）
+if (val === 7) {
+  div.className = "number seven";
+}
+
+
+      const baseY = 100 + Math.random() * (window.innerHeight - 200);
+      const left = initial 
+        ? (window.innerWidth / NUM_TOTAL) * numbers.length + (Math.random() * 50 - 25)
+        : -1800 - Math.random() * 800;
+
+      div.style.left = `${left}px`;
+      div.style.top = `${baseY}px`;
+
+      document.body.appendChild(div);
+
+      numbers.push({
+        el: div,
+        value: val,
+  isOperator,  
+        speed: 1 + Math.random() * 1.5,
+        hooked: false,
+        floatTime: 0,
+        baseY:baseY,
+        floatSpeed: 0.5 + Math.random(),
+        floatHeight: 20 + Math.random() * 30
+      });
+    }
+
+    function animate() {
+      // 保持一定数量的数字存在
+if (numbers.length < NUM_TOTAL) {
+    createEntity();
+}
+
+      if (!gameActive || isPaused) return;
+
+      const gameTime = (Date.now() - gameStartTime) / 1000;
+
+      speedMultiplier = Math.min(3, 1 + gameTime / 150.0);
+
+      numbers.forEach(n => {
+        if (n.hooked) return;
+        const x = parseFloat(n.el.style.left) + n.speed * speedMultiplier;
+        const y = n.baseY + Math.sin(n.floatTime * n.floatSpeed) * n.floatHeight;
+        n.el.style.left = `${x}px`;
+        n.el.style.top = `${y}px`;
+        n.floatTime += 0.01;
+
+        if (x > window.innerWidth ) {
+          n.el.style.left = `-${n.el.offsetWidth + 10}px`;;
+          n.baseY = 100 + Math.random() * (window.innerHeight - 200);
+          //n.el.remove();
+          //numbers.splice(numbers.indexOf(n), 1);
+        }
+      });
+
+      requestAnimationFrame(animate);
+    }
+    //initMusic();
+    for (let i = 0; i < NUM_TOTAL; i++) createEntity(true);
+    animate();
+
+    document.addEventListener("click", e => {
+      if (!gameActive || isPaused || isHookActive) return;
+      isHookActive = true;
+
+      const hookX = e.clientX;
+      hook.style.left = `${hookX}px`;
+      hook.style.height = `0px`;
+      hook.style.display = "block";
+
+      let h = 0;
+      const interval = setInterval(() => {
+        if (isPaused) return;  // 暂停时不更新勾子，不检测碰撞
+         if (timeLeft <= 0) {
+    // 游戏结束，保持钩子停在当前高度，不再收回
+        clearInterval(interval); // 停止当前勾子运动
+       hook.style.display = "block"; // 保持勾子停在当前高度
+         isHookActive = false;
+         hook.style.height = `${h}px`;
+        return;
+        }
+
+        h += 10;
+        hook.style.height = `${h}px`;
+
+        const hit = numbers.find(n => {
+          if (n.hooked) return false;
+          const r = n.el.getBoundingClientRect();
+          return r.left < hookX && r.right > hookX && r.top < h;
+        });
+        if (hit) {
+          const rect = hit.el.getBoundingClientRect();
+          clearInterval(interval);
+          hit.hooked = true;
+          if (hit.isOperator) {
+    const operatorSound = catchOperatorSound.cloneNode(true);
+    operatorSound.currentTime = 0;
+    operatorSound.play();
+} else {
+    if (hit.value === 7) {
+        const sevenSound = catchSevenSound.cloneNode(true);
+        sevenSound.currentTime = 0;
+        sevenSound.play();
+    } else {
+        const normalSound = clickSound.cloneNode(true);
+        normalSound.currentTime = 0;
+        normalSound.play();
+    }
+}
+
+         
+           // 播放点击音效
+        
+          hit.el.style.position = "fixed";
+          hit.el.style.left = `${rect.left}px`;
+          hit.el.style.top = `${rect.top}px`;
+          hit.el.style.zIndex = 1000;
+
+          let lift = rect.top;
+          const liftUp = setInterval(() => {
+            if(isPaused)return;
+            if (timeLeft <= 0) {
+    // 游戏结束，保持钩子停在当前高度，不再收回
+        clearInterval(interval); // 停止当前勾子运动
+       hook.style.display = "block"; // 保持勾子停在当前高度
+         isHookActive = false;
+         hook.style.height = `${lift}px`;
+        return;
+        }
+            lift -= 10;
+
+            hook.style.height = `${lift}px`;
+            hit.el.style.top = `${lift}px`;
+            if (lift <= 0) {
+              clearInterval(liftUp);
+              hook.style.display = "none";
+              hit.el.remove();
+              numbers.splice(numbers.indexOf(hit), 1);
+let change = 0, notificationText = "", color = "green";
+              if (hit.isOperator) {
+                const isLucky = hit.el.classList.contains('lucky');
+const points = hit.value === 7 ? 77 : parseInt(hit.value) || 0;
+score += points;
+scoreDisplay.textContent = `Score: ${score}`;
+showNotification(`+${points}`, hit.value === 7 ? "#FF2222" : (isLucky ? "#33AA33" : "#33AA33"), "score");
+
+                switch (hit.value) {
+    case "加十":
+    case "plus ten":
+    case "più dieci":          // Italian
+    case "kymmenen lisää":      // Finnish
+    case "プラス10":            // Japanese
+      timeLeft += 10;
+      notificationText = "+10s";
+      break;
+
+    case "减五":
+    case "minus five":
+    case "meno cinque":        // Italian
+    case "miinus viisi":       // Finnish
+    case "マイナス5":            // Japanese
+      timeLeft -= 5;
+      notificationText = "-5s";
+      color = "red";
+      break;
+
+    case "乘二":
+    case "multiply by two":
+    case "moltiplica per due": // Italian
+    case "kerro kahdella":     // Finnish
+    case "かける2":              // Japanese
+      timeLeft *= 2;
+       notificationText = "×2";
+      break;
+
+    case "除以二":
+    case "divided by two":
+    case "diviso per due":     // Italian
+    case "jaettuna kahdella":  // Finnish
+    case "わる2":                // Japanese
+      timeLeft /= 2;
+      notificationText = "÷2";
+      color = "red";
+      break;
+
+      case "减十":
+    case "minus ten":
+    case "meno dieci":        // Italian
+    case "miinus lisää":      // Finnish (is this the correct translation? Double-check if needed)
+    case "マイナス10":          // Japanese
+      timeLeft -= 10;
+      notificationText = "-10s";
+      color = "red";
+      break;
+
+      
+}
+
+
+timeLeft = Math.max(0, Math.floor(timeLeft));
+timeDisplay.textContent = timeLeft;
+
+showNotification(notificationText, color, "time");
+
+} else {
+  const points = hit.value === 7 ? 77 : hit.value;
+  score += points;
+  scoreDisplay.textContent = `Score: ${score}`;
+  
+  showNotification(`+${points}`, hit.value === 7 ? "#FF2222" : "#33AA33", "score");
+}
+
+              createEntity();
+              isHookActive = false;
+            }
+          }, 16);
+        } else if (h > window.innerHeight) {
+  clearInterval(interval);
+ 
+  // 正常情况下收回钩子
+  let returnHeight = window.innerHeight;
+  const returnInterval = setInterval(() => {
+    if(isPaused)return;
+    if (timeLeft <= 0) {
+    // 游戏结束，保持钩子停在当前高度，不再收回
+        clearInterval(interval); // 停止当前勾子运动
+       hook.style.display = "block"; // 保持勾子停在当前高度
+         isHookActive = false;
+         hook.style.height = `${returnHeight}px`;
+        return;
+        }
+    returnHeight -= 10;
+    hook.style.height = `${returnHeight}px`;
+    if (returnHeight <= 0) {
+      clearInterval(returnInterval);
+      hook.style.display = "none";
+      isHookActive = false;
+    }
+  }, 16);
+}
+
+
+
+      }, 16);
+    });
+     const timer = setInterval(() => {
+      if (!gameActive || isPaused) return; 
+ 
+  const currentTime = Date.now();
+  
+  // If it's time to update the timer
+  if (currentTime >= nextTickTime) {
+    timeLeft = Math.max(0, timeLeft - 1);  // Prevent timeLeft from going negative
+    timeDisplay.textContent = timeLeft;
+    nextTickTime = currentTime + 1000; // Schedule next tick
+
+    if (timeLeft <= 0) {
+      gameActive = false;
+      clearInterval(timer); 
+       // 停止所有音效和背景音乐
+bgMusic.pause();
+    clickSound.pause();
+    catchSevenSound.pause();
+    catchOperatorSound.pause();
+    buttonSound.pause();
+
+    // 可选：重置播放位置，下次从头开始
+    bgMusic.currentTime = 0;
+    clickSound.currentTime = 0;
+    catchSevenSound.currentTime = 0;
+    catchOperatorSound.currentTime = 0;
+    buttonSound.currentTime = 0;
+      // 判断是否达到新高分
+      if (score > highScore) {
+    highScore = score;
+    localStorage.setItem('save7skyLanguageHighScore', highScore);
+    document.getElementById("highScore").textContent = `High Score: ${highScore}`; 
+    highScoreSound.currentTime = 0;
+    highScoreSound.play();
+  } else {
+    timesUpSound.currentTime = 0;
+    timesUpSound.play();
+  }
+
+      hook.style.transition = "none";  // 停止任何过渡动画
+    
+
+      
+
+
+      // Update High Scores
+      const totalTime = 77 - timeLeft;
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('save7skyLanguageHighScore', highScore);
+      }
+      if (totalTime > highestTime) {
+        highestTime = totalTime;
+        localStorage.setItem('save7skyHighestTime', highestTime);
+      }
+
+      document.getElementById("menuText").innerHTML = `
+        <div style="color: #FF5E79; text-shadow: 3px 3px 0 #000; font-size: 48px; margin-bottom: 30px;">
+          Time's Up!
+        </div>
+        <div style="color: #666666; text-shadow: 3px 3px 0 #000; font-size: 32px; margin-bottom: 20px;">Score: ${score}</div>
+        <div style="color: #666666; text-shadow: 3px 3px 0 #000; font-size: 32px;">High Score: ${highScore}</div>
+      `;
+
+      document.getElementById("menuOverlay").style.display = "block";
+      document.getElementById("resumeButton").style.display = "none";
+    }
+  }
+}, 100); // Check every 100ms for more accurate timing
+
+    function pauseGame() {
+      isPaused = true;
+      bgMusic.pause();  
+      document.getElementById("menuText").innerHTML = "<div style='color: #FF5E79;text-shadow: 3px 3px 0 #000000 ; font-size: 32px'>Game Paused</div>";
+      document.getElementById("menuOverlay").style.display = "block";
+      hook.style.transition = "none"; // 停止动画平滑效果
+    }
+
+    function resumeGame() {
+      isPaused = false;
+      document.getElementById("menuOverlay").style.display = "none";
+      animate(); 
+      if (musicEnabled && bgMusic.paused) {
+        bgMusic.play();  // 恢复播放，不会从头开始
+    }
+    }
+
+    function restartGame() {
+     const newAudio = buttonSound.cloneNode(true); // 关键！
+    newAudio.currentTime = 0;
+    newAudio.play();
+    setTimeout(() => location.reload(), 500);
+    }
+
+
+    function goHome() {
+    const newAudio = buttonSound.cloneNode(true); // 关键！
+    newAudio.currentTime = 0;
+    newAudio.play();
+    setTimeout(() =>  window.location.href = "index.html",500); // 确保音效播放后跳转
+}
+
+    document.getElementById("pauseButton").addEventListener("click", () => {
+    buttonSound.currentTime = 0;
+    buttonSound.play();
+    pauseGame();
+});
+
+document.getElementById("resumeButton").addEventListener("click", function(event) {
+    //buttonSound.currentTime = 0;
+    // buttonSound.play();
+    const newAudio = buttonSound.cloneNode(true); // 关键！
+    newAudio.currentTime = 0;
+    newAudio.play().then(() => {
+    //   event.stopPropagation();
+           resumeGame();
+    }).catch(() => {
+       //event.stopPropagation();
+           resumeGame();
+    });
+});
+function playHighscoreSound() {
+  const highscoreSound = document.getElementById('highscoreSound');
+  if (highscoreSound) {
+    highscoreSound.currentTime = 0; // 重置播放位置
+    highscoreSound.play();
+  }
+}
+
+
+  const starsContainer = document.querySelector('.stars');
+const STAR_COUNT = 50;
+
+for (let i = 0; i < STAR_COUNT; i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+
+  const duration = 10 + Math.random() * 10;
+  star.style.animationDuration = `${duration}s`;
+
+  star.style.left = `-10px`;
+  star.style.top = `${Math.random() * 100}vh`;
+
+  const progress = Math.random();
+  star.style.animationDelay = `${-progress * duration}s`;
+
+  const colors = ['#FFFFFF', '#FFDDEE', '#CCEEFF', '#FFFFCC'];
+  star.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+  const yDrift = (Math.random() - 0.5) * 100;
+  star.style.setProperty('--y-drift', `${yDrift}px`);
+
+  starsContainer.appendChild(star);
+}
+
+  </script>
+</body>
+</html>

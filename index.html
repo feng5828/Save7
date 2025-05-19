@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SAVE 7</title>
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+  
+body {
+  height: 100%;
+  background: linear-gradient(135deg, #70c6ff, #FDDDE6, #f7ffd6, #ffa6d0,#a6ffcd);
+  background-size: 200% 200%;
+  animation: gradientShift 15s ease infinite;
+  margin: 0;
+  font-family: 'Press Start 2P', cursive;
+  image-rendering: pixelated;
+  text-align: center;
+  color: black;
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+h1 {
+  font-size: 64px;
+  color: #FF5E79;
+  text-shadow: 4px 4px 0 #000;
+  margin: 150px 0 60px; /* Increased top margin */
+  animation: float 3s ease-in-out infinite;
+}
+
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+.game-description {
+  font-size: 14px;
+  color: #333;
+  text-shadow: 1px 1px 0 #FFF;
+  margin: -40px auto 40px;
+  max-width: 600px;
+  line-height: 1.8;
+}
+
+.highlight-seven {
+  color: #FF5E79;
+}
+
+.highlight-points {
+  color: #FF5E79;
+}
+
+.highlight-operator {
+  color: #4DA6FF;
+}
+
+.game-modes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  max-width: 300px;
+  margin: 50px auto 0;
+}
+
+.game-mode {
+  width: 100%;
+}
+
+.game-mode h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #545454;
+  text-shadow: 2px 2px 0 #ffffff;
+}
+
+.high-score {
+  font-size: 14px;
+  color: #4DA6FF;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px 0 #000;
+}
+
+a {
+  background: #C3F7FF;
+  color: #FF5E79;
+  border: none;
+  font-family: 'Press Start 2P', cursive;
+  padding: 15px 0;  
+  font-size: 16px;  
+  cursor: pointer;
+  width: 100%;
+  text-decoration: none;
+  display: flex;             
+  justify-content: center;  
+  align-items: center;     
+  box-shadow: 2px 4px #000;
+  transition: background 0.3s, transform 0.2s;
+  letter-spacing: 1px;     
+  text-transform: uppercase; 
+}
+
+a:hover {
+  background: #FF5E79;
+  color: #FFF;
+  transform: translateY(-4px);
+  box-shadow: 4px 8px #000;
+}
+
+.stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #FFF;
+  image-rendering: pixelated;
+  box-shadow: 2px 2px 0 #000;
+  animation: floatStar linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes floatStar {
+  0% {
+    transform: translateX(0) translateY(0);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateX(50vw) translateY(calc(var(--y-drift) * 0.5));
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100vw) translateY(var(--y-drift));
+    opacity: 0;
+  }
+}
+.credits {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  text-shadow: 1px 1px 0 #FFF;
+  margin-top: -40px; /* Pull it closer to the title */
+  margin-bottom: 40px;
+}
+
+  </style>
+  
+</head>
+<body>
+  
+  <audio id="rainAudio" autoplay loop>
+    <source src="https://docs.google.com/uc?export=open&id=1imTo1jW1AcxIEQHfWP_koqsNXVNd9DIx" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <audio id="buttonSound" preload="auto">
+    <source src="assets/clickbutton.mp3" type="audio/mpeg">
+  </audio>
+  
+  
+  
+
+  <div class="stars"></div>
+  
+
+
+  <h1>SAVE 7</h1>
+  
+  <div class="game-description">
+    Get the <span class="highlight-seven">7</span> to earn <span class="highlight-points">77 points</span>.<br>
+    Catch <span class="highlight-operator">blue operators</span> to change the time!
+  </div>
+  <div class="credits">Designed by Feng © 2025</div>
+  <div class="game-modes">
+    <div class="game-mode">
+      <h2>NORMAL</h2>
+      <div class="high-score">HIGH: <span id="normal-score">0</span></div>
+      <a href="normal.html"class="start-button">START</a>
+    </div>
+    
+ 
+    <div class="game-mode">
+      <h2>MATH MASTER</h2>
+      <div class="high-score">HIGH: <span id="math-score">0</span></div>
+      <a href="math.html"class="start-button">START</a>
+    </div>
+    
+    <div class="game-mode">
+      <h2>LANGUAGE MASTER</h2>
+      <div class="high-score">HIGH: <span id="language-score">0</span></div>
+      <a href="language.html"class="start-button">START</a>
+    </div>
+  </div>
+
+
+
+  <script>
+   const starsContainer = document.querySelector('.stars');
+const STAR_COUNT = 50;
+
+
+for (let i = 0; i < STAR_COUNT; i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+
+  const duration = 10 + Math.random() * 10;
+  star.style.animationDuration = `${duration}s`;
+
+  //stars entering form the left
+  star.style.left = `-10px`;
+  star.style.top = `${Math.random() * 100}vh`;
+  const progress = Math.random();
+  star.style.animationDelay = `${-progress * duration}s`;
+
+  const colors = ['#FFFFFF', '#FFDDEE', '#CCEEFF', '#FFFFCC'];
+  star.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+  // random movements
+  const yDrift = (Math.random() - 0.5) * 100; 
+  star.style.setProperty('--y-drift', `${yDrift}px`);
+
+  starsContainer.appendChild(star);
+}
+
+
+    // Load high scores
+    const highScores = JSON.parse(localStorage.getItem('save7HighScores')) || {
+      normal: 0,
+      hard: 0,
+      math: 0,
+      language: 0
+    };
+    
+    // Display high scores
+    document.getElementById('normal-score').textContent = localStorage.getItem('save7skyNormalHighScore') || 0;
+document.getElementById('math-score').textContent = localStorage.getItem('save7skyMathHighScore') || 0;
+document.getElementById('language-score').textContent = localStorage.getItem('save7skyLanguageHighScore') || 0;
+
+    
+    // Start game function
+    function startGame(mode) {
+      localStorage.setItem('save7GameMode', mode);
+      window.location.href = 'game.html';
+    }
+    
+    // Update high score (called from game page)
+    window.updateHighScore = function(score) {
+      const mode = localStorage.getItem('save7GameMode') || 'normal';
+      if (score > highScores[mode]) {
+        highScores[mode] = score;
+        localStorage.setItem('save7HighScores', JSON.stringify(highScores));
+        document.getElementById(`${mode}-score`).textContent = score;
+      }
+    };
+
+    const buttonSound = document.getElementById('buttonSound');
+
+    document.querySelectorAll('.start-button').forEach(button => {
+  button.addEventListener('click', function(e) {
+    e.preventDefault(); // 阻止默认跳转
+    const targetUrl = this.getAttribute('href');
+    
+    // 播放音效
+    const buttonSound = document.getElementById('buttonSound');
+    buttonSound.currentTime = 0;
+    buttonSound.play();
+    
+    // 500ms 后跳转
+    setTimeout(() => {
+      window.location.href = targetUrl;
+    }, 800);
+  });
+});
+
+
+  </script>
+</body>
+</html>
